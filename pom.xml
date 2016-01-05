@@ -9,4 +9,7 @@
   <artifactId>dlm</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Distributed lock manager</name>
+  <properties>
+  	<java.version>1.8</java.version>
+  </properties>
 </project>
