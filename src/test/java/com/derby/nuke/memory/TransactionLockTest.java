@@ -23,7 +23,7 @@ public class TransactionLockTest {
 			tasks.add(() -> {
 				String ticket = null;
 				try {
-					ticket = lock.lock(50L, TimeUnit.MILLISECONDS);
+					ticket = lock.tryLock(50L, TimeUnit.MILLISECONDS);
 //					ticket = lock.lock();
 					TimeUnit.MILLISECONDS.sleep(500L);
 					System.out.println(new Date().toString() + ": " + index);

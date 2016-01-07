@@ -18,11 +18,11 @@ public interface IResourceLock {
 
 	/**
 	 * 
-	 * @param time
+	 * @param timeout
 	 * @param unit
 	 * @return ticket id
 	 */
-	String lock(Serializable resource, long time, TimeUnit unit) throws InterruptedException;
+	String tryLock(Serializable resource, long timeout, TimeUnit unit) throws InterruptedException;
 
 	/**
 	 * 

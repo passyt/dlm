@@ -17,11 +17,11 @@ public interface ILock {
 
 	/**
 	 * 
-	 * @param time
+	 * @param timeout
 	 * @param unit
 	 * @return ticket id
 	 */
-	String lock(long time, TimeUnit unit) throws InterruptedException;
+	String tryLock(long timeout, TimeUnit unit) throws InterruptedException;
 
 	/**
 	 * 

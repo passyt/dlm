@@ -23,7 +23,7 @@ public class BasicLock implements ILock {
 	}
 
 	@Override
-	public String lock(long time, TimeUnit unit) throws InterruptedException {
+	public String tryLock(long time, TimeUnit unit) throws InterruptedException {
 		lock.tryLock(time, unit);
 		return DEFAULT_TICKET;
 	}

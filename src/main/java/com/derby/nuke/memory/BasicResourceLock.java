@@ -27,8 +27,8 @@ public class BasicResourceLock implements IResourceLock {
 	}
 
 	@Override
-	public String lock(Serializable resource, long time, TimeUnit unit) throws InterruptedException {
-		return getLock(resource).lock(time, unit);
+	public String tryLock(Serializable resource, long time, TimeUnit unit) throws InterruptedException {
+		return getLock(resource).tryLock(time, unit);
 	}
 
 	@Override
