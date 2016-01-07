@@ -1,19 +1,13 @@
 package com.derby.nuke.memory;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.derby.nuke.ILock;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Maps;
 
 /**
  * 
@@ -22,16 +16,14 @@ import com.google.common.collect.Maps;
  */
 public class TransactionLock implements ILock {
 
-	private static final byte[] REFERENCE = new byte[0];
+	private static final String DEFAULT_TICKET = "";
 
 	private final TimeUnit unit;
 	private final long duration;
-	private final long total;
-
-	private final Lock lock = new ReentrantLock();
-	private final Condition condition = lock.newCondition();
-	private final LoadingCache<Long, byte[]> cache;
-	private final AtomicLong tickets = new AtomicLong();
+	private final int total;
+	private final Semaphore semaphore;
+	private final AtomicInteger ai = new AtomicInteger();
+	private final ScheduledExecutorService backgroundRemoveSchedule = Executors.newSingleThreadScheduledExecutor();
 
 	/**
 	 * 
@@ -39,69 +31,37 @@ public class TransactionLock implements ILock {
 	 * @param duration
 	 * @param unit
 	 */
-	public TransactionLock(long total, long duration, TimeUnit unit) {
+	public TransactionLock(int total, long duration, TimeUnit unit) {
 		super();
 		this.total = total;
 		this.duration = duration;
 		this.unit = unit;
-		this.cache = CacheBuilder.newBuilder().expireAfterWrite(this.duration, this.unit)
-				.build(new CacheLoader<Long, byte[]>() {
-
-					@Override
-					public byte[] load(Long key) throws Exception {
-						return REFERENCE;
-					}
-
-				});
+		this.semaphore = new Semaphore(total, true);
+		backgroundRemoveSchedule.scheduleAtFixedRate(() -> {
+			System.out.println(new Date().toString() + ": release");
+			semaphore.release(ai.get());
+		} , duration, duration, unit);
 	}
 
 	@Override
 	public String lock() throws InterruptedException {
-		try {
-			lock.lock();
-			System.out.println("lock: " + sizeOfCache());
-			if (sizeOfCache() >= total) {
-				condition.await();
-			}
-
-			long ticket = tickets.getAndIncrement();
-			cache.put(ticket, REFERENCE);
-			return String.valueOf(ticket);
-		} finally {
-			lock.unlock();
-		}
+		semaphore.acquire();
+		ai.incrementAndGet();
+		return DEFAULT_TICKET;
 	}
 
 	@Override
 	public String lock(long time, TimeUnit unit) throws InterruptedException {
-		try {
-			lock.lock();
-			try {
-				return new FutureTask<String>(() -> {
-					return lock();
-				}).get(time, unit);
-			} catch (ExecutionException e) {
-				throw new IllegalStateException(e);
-			} catch (TimeoutException e) {
-				throw new InterruptedException(e.getMessage());
-			}
-		} finally {
-			lock.unlock();
+		if (!semaphore.tryAcquire(time, unit)) {
+			throw new InterruptedException("Timeout");
 		}
+
+		ai.incrementAndGet();
+		return DEFAULT_TICKET;
 	}
 
 	@Override
 	public void unlock(String ticketId) {
-		boolean locking = sizeOfCache() > total;
-		cache.invalidate(ticketId);
-		System.out.println("unlock: " + sizeOfCache());
-		if (locking) {
-			condition.signal();
-		}
-	}
-
-	protected long sizeOfCache() {
-		return Maps.newHashMap(this.cache.asMap()).size();
 	}
 
 	public TimeUnit getUnit() {
