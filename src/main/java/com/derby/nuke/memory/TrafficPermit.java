@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 import com.derby.nuke.IPermit;
 
 /**
- * TransactionLock is the tool to block some resource by a given {@link #total}
- * of {@link #duration} and time {@link #timeUnit}. For example, if you want to
- * block the traffic to 100 TPS, you can do it like that:
+ * {@code TrafficPermit} is the tool to block some resource by a given
+ * {@link #total} of {@link #duration} and time {@link #timeUnit}. For example,
+ * if you want to block the traffic to 100 TPS, you can do it like that:
  * 
  * <pre>
  * class TpsController {
