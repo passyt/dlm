@@ -79,7 +79,7 @@ public class TrafficPermit implements IPermit {
 	@Override
 	public String tryAcquire(long time, TimeUnit unit) throws InterruptedException {
 		if (!semaphore.tryAcquire(time, unit)) {
-			throw new InterruptedException("Timeout to acquire a lock within " + time + " " + unit);
+			throw new InterruptedException("Timeout to acquire a permit within " + time + " " + unit);
 		}
 
 		releaseWithDelay();

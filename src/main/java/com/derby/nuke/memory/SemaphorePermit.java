@@ -31,7 +31,7 @@ public class SemaphorePermit implements IPermit {
 	@Override
 	public String tryAcquire(long timeout, TimeUnit unit) throws InterruptedException {
 		if (!semaphore.tryAcquire(timeout, unit)) {
-			throw new InterruptedException("Timeout to acquire a lock within " + timeout + " " + unit);
+			throw new InterruptedException("Timeout to acquire a permit within " + timeout + " " + unit);
 		}
 
 		return DEFAULT_TICKET;
