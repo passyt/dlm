@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import com.derby.nuke.ILock;
+import com.derby.nuke.IPermit;
 
 /**
  * TransactionLock is the tool to block some resource by a given {@link #total}
@@ -14,15 +14,15 @@ import com.derby.nuke.ILock;
  * 
  * <pre>
  * class TpsController {
- * 	private ILock lock = new TrafficLock(100, 1, TimeUnit.SECONDS);
+ * 	private IPermit permit = new TrafficPermit(100, 1, TimeUnit.SECONDS);
  * 
  * 	public <T> T execute(Callback<T> callback) {
  * 		String ticket = null;
  * 		try {
- * 			ticket = lock.lock();
+ * 			ticket = permit.acquire();
  * 			return callback.call();
  * 		} finally {
- * 			lock.unlock(ticket);
+ * 			permit.release(ticket);
  * 		}
  * 	}
  * }
@@ -31,7 +31,7 @@ import com.derby.nuke.ILock;
  * @author Passyt
  *
  */
-public class TrafficLock implements ILock {
+public class TrafficPermit implements IPermit {
 
 	private static final String DEFAULT_TICKET = "";
 
@@ -63,7 +63,7 @@ public class TrafficLock implements ILock {
 	 * @param duration
 	 * @param unit
 	 */
-	public TrafficLock(int total, long duration, TimeUnit unit) {
+	public TrafficPermit(int total, long duration, TimeUnit unit) {
 		super();
 		this.total = total;
 		this.duration = duration;
@@ -72,14 +72,14 @@ public class TrafficLock implements ILock {
 	}
 
 	@Override
-	public String lock() throws InterruptedException {
+	public String acquire() throws InterruptedException {
 		semaphore.acquire();
 		releaseWithDelay();
 		return DEFAULT_TICKET;
 	}
 
 	@Override
-	public String tryLock(long time, TimeUnit unit) throws InterruptedException {
+	public String tryAcquire(long time, TimeUnit unit) throws InterruptedException {
 		if (!semaphore.tryAcquire(time, unit)) {
 			throw new InterruptedException("Timeout to acquire a lock within " + time + " " + unit);
 		}
@@ -94,7 +94,7 @@ public class TrafficLock implements ILock {
 	 */
 	@Override
 	@Deprecated
-	public void unlock(String ticketId) {
+	public void release(String ticketId) {
 	}
 
 	protected void releaseWithDelay() {

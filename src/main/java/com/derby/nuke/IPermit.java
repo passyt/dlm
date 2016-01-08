@@ -7,13 +7,13 @@ import java.util.concurrent.TimeUnit;
  * @author Passyt
  *
  */
-public interface ILock {
+public interface IPermit {
 
 	/**
 	 * 
 	 * @return ticket id
 	 */
-	String lock() throws InterruptedException;
+	String acquire() throws InterruptedException;
 
 	/**
 	 * 
@@ -21,11 +21,11 @@ public interface ILock {
 	 * @param unit
 	 * @return ticket id
 	 */
-	String tryLock(long timeout, TimeUnit unit) throws InterruptedException;
+	String tryAcquire(long timeout, TimeUnit unit) throws InterruptedException;
 
 	/**
 	 * 
 	 */
-	void unlock(String ticketId);
+	void release(String ticketId);
 
 }
