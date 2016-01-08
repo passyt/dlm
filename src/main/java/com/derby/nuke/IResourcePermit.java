@@ -1,6 +1,5 @@
 package com.derby.nuke;
 
-import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -8,13 +7,13 @@ import java.util.concurrent.TimeUnit;
  * @author Passyt
  *
  */
-public interface IResourcePermit {
+public interface IResourcePermit<R> {
 
 	/**
 	 * 
 	 * @return ticket id
 	 */
-	String acquire(Serializable resource) throws InterruptedException;
+	String acquire(R resource) throws InterruptedException;
 
 	/**
 	 * 
@@ -22,13 +21,13 @@ public interface IResourcePermit {
 	 * @param unit
 	 * @return ticket id
 	 */
-	String tryAcquire(Serializable resource, long timeout, TimeUnit unit) throws InterruptedException;
+	String tryAcquire(R resource, long timeout, TimeUnit unit) throws InterruptedException;
 
 	/**
 	 * 
 	 * @param resource
 	 * @param ticketId
 	 */
-	void release(Serializable resource, String ticketId);
+	void release(R resource, String ticketId);
 
 }
