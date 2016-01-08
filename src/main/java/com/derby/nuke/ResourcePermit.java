@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class ResourcePermit<R> implements IResourcePermit<R> {
 
-	private final IPermitBuilder<R> permitBuilder;
+	private final IResourcePermitBuilder<R> permitBuilder;
 	private final ConcurrentMap<R, IPermit> permits = new ConcurrentHashMap<>();
 
-	public ResourcePermit(IPermitBuilder<R> permitBuilder) {
+	public ResourcePermit(IResourcePermitBuilder<R> permitBuilder) {
 		this.permitBuilder = permitBuilder;
 	}
 

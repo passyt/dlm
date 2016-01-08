@@ -1,6 +1,6 @@
 package com.derby.nuke;
 
-public interface IPermitBuilder<R> {
+public interface IResourcePermitBuilder<R> {
 
 	IPermit createPermit(R resource);
 
