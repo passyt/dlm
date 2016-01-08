@@ -8,6 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.redisson.Config;
+import org.redisson.Redisson;
+import org.redisson.RedissonClient;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
@@ -26,7 +29,7 @@ public class TrafficPermitTest {
 				try {
 					// ticket = lock.tryLock(50L, TimeUnit.MILLISECONDS);
 					ticket = lock.acquire();
-					TimeUnit.MILLISECONDS.sleep(1500L);
+					TimeUnit.MILLISECONDS.sleep(500L);
 					System.out.println(LocalDateTime.now().toString() + ": " + index);
 					return null;
 				} catch (Exception e) {
@@ -45,8 +48,49 @@ public class TrafficPermitTest {
 		System.out.println(System.currentTimeMillis() - now);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void test2() throws Exception {
+		Config config = new Config();
+		config.useSingleServer().setAddress("10.200.152.40:6379");
+
+		RedissonClient client = Redisson.create(config);
+
+		com.derby.nuke.distributed.redis.TrafficPermit lock = new com.derby.nuke.distributed.redis.TrafficPermit("test.semaphore", client, 5, 1,
+				TimeUnit.SECONDS);
+		try {
+			List<Callable<Void>> tasks = Lists.newArrayList();
+			for (int i = 0; i < 500; i++) {
+				final int index = i;
+				tasks.add(() -> {
+					String ticket = null;
+					try {
+						// ticket = lock.tryLock(50L, TimeUnit.MILLISECONDS);
+						ticket = lock.acquire();
+						TimeUnit.MILLISECONDS.sleep(500L);
+						System.out.println(LocalDateTime.now().toString() + ": " + index);
+						return null;
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw e;
+					} finally {
+						lock.release(ticket);
+					}
+				});
+			}
+
+			long now = System.currentTimeMillis();
+			ExecutorService executorService = Executors.newFixedThreadPool(100);
+			executorService.invokeAll(tasks);
+			executorService.shutdown();
+			System.out.println(System.currentTimeMillis() - now);
+		} finally {
+			client.shutdown();
+		}
+	}
+
+	@Test
+	public void test3() throws Exception {
 		RateLimiter limiter = RateLimiter.create(5);
 
 		List<Callable<Void>> tasks = Lists.newArrayList();
