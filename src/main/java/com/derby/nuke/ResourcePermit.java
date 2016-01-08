@@ -5,16 +5,31 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Blocking to access some resource with a provided {@link IPermit} created by
+ * {@link #permitBuilder}. This can be easily to support multiple types of
+ * permit such as {@link com.derby.nuke.memory.SemaphorePermit},
+ * {@link com.derby.nuke.memory.TrafficPermit} to access a limited resource
  * 
  * @author Passyt
- *
+ * @see com.derby.nuke.memory.SemaphorePermit
+ * @see com.derby.nuke.memory.TrafficPermit
  */
 public class ResourcePermit<R> implements IResourcePermit<R> {
 
-	private final IResourcePermitBuilder<R> permitBuilder;
+	/**
+	 * a builder to create {@link IPermit}
+	 */
+	private final IPermitBuilder<R> permitBuilder;
+	/**
+	 * created permits in cache
+	 */
 	private final ConcurrentMap<R, IPermit> permits = new ConcurrentHashMap<>();
 
-	public ResourcePermit(IResourcePermitBuilder<R> permitBuilder) {
+	/**
+	 * 
+	 * @param permitBuilder
+	 */
+	public ResourcePermit(IPermitBuilder<R> permitBuilder) {
 		this.permitBuilder = permitBuilder;
 	}
 

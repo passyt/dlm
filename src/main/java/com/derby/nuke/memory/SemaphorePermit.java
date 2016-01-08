@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import com.derby.nuke.IPermit;
 
 /**
- * SemaphorePermit is the tool to perform like a pool with a maximum
+ * SemaphorePermit is the tool to perform like a pool with a maximum number of
  * {@link #total}
  * 
  * @author Passyt

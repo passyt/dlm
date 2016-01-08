@@ -7,6 +7,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.derby.nuke.IPermit;
 
 /**
+ * BasicPermit is a basic implemention of IPermit with
+ * {@link java.util.concurrent.locks.ReentrantLock}
  * 
  * @author passyt
  *
