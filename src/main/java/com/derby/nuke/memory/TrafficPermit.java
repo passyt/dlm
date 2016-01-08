@@ -33,8 +33,6 @@ import com.derby.nuke.IPermit;
  */
 public class TrafficPermit implements IPermit {
 
-	private static final String DEFAULT_TICKET = "";
-
 	/**
 	 * time unit of blocking resource
 	 */

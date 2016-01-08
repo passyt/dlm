@@ -13,7 +13,6 @@ import com.derby.nuke.IPermit;
  */
 public class BasicPermit implements IPermit {
 
-	private static final String DEFAULT_TICKET = "";
 	private final Lock lock = new ReentrantLock();
 
 	@Override

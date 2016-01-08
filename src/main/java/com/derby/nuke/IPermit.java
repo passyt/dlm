@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public interface IPermit {
+	
+	String DEFAULT_TICKET = "";
 
 	/**
 	 * 
