@@ -14,7 +14,7 @@ import com.derby.nuke.ILock;
  * 
  * <pre>
  * class TpsController {
- * 	private ILock lock = new TransactionLock(100, 1, TimeUnit.SECONDS);
+ * 	private ILock lock = new TrafficLock(100, 1, TimeUnit.SECONDS);
  * 
  * 	public <T> T execute(Callback<T> callback) {
  * 		String ticket = null;
@@ -31,7 +31,7 @@ import com.derby.nuke.ILock;
  * @author Passyt
  *
  */
-public class TransactionLock implements ILock {
+public class TrafficLock implements ILock {
 
 	private static final String DEFAULT_TICKET = "";
 
@@ -63,7 +63,7 @@ public class TransactionLock implements ILock {
 	 * @param duration
 	 * @param unit
 	 */
-	public TransactionLock(int total, long duration, TimeUnit unit) {
+	public TrafficLock(int total, long duration, TimeUnit unit) {
 		super();
 		this.total = total;
 		this.duration = duration;

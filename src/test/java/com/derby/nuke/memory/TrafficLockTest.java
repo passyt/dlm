@@ -11,12 +11,12 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-public class TransactionLockTest {
+public class TrafficLockTest {
 
 	@SuppressWarnings("deprecation")
 	@Test
 	public void test1() throws Exception {
-		TransactionLock lock = new TransactionLock(5, 1, TimeUnit.SECONDS);
+		TrafficLock lock = new TrafficLock(5, 1, TimeUnit.SECONDS);
 		List<Callable<Void>> tasks = Lists.newArrayList();
 		for (int i = 0; i < 50; i++) {
 			final int index = i;
