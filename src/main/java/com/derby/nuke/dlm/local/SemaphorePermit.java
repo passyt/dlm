@@ -36,8 +36,9 @@ public class SemaphorePermit extends LocalPermit {
 	}
 
 	@Override
-	public void release(String ticketId) {
+	public boolean release(String ticketId) {
 		semaphore.release();
+		return true;
 	}
 
 	public int getTotal() {

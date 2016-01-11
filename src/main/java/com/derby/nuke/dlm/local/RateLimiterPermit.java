@@ -63,7 +63,8 @@ public class RateLimiterPermit extends LocalPermit {
 	 */
 	@Override
 	@Deprecated
-	public void release(String ticketId) {
+	public boolean release(String ticketId) {
+		return true;
 	}
 
 }

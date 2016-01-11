@@ -29,6 +29,6 @@ public interface IPermit {
 	 * 
 	 * @param ticketId
 	 */
-	void release(String ticketId);
+	boolean release(String ticketId);
 
 }

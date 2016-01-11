@@ -19,9 +19,9 @@ public class TrafficPermit implements IPermit {
 	}
 
 	@Override
-	public void release(String ticketId) {
+	public boolean release(String ticketId) {
 		// TODO Auto-generated method stub
-
+		return false;
 	}
 
 }

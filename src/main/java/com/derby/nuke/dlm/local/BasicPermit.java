@@ -28,8 +28,9 @@ public class BasicPermit extends LocalPermit {
 	}
 
 	@Override
-	public void release(String ticketId) {
+	public boolean release(String ticketId) {
 		lock.unlock();
+		return true;
 	}
 
 }
