@@ -1,11 +1,9 @@
-package com.derby.nuke.memory;
+package com.derby.nuke.dlm.local;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import com.derby.nuke.IPermit;
 
 /**
  * {@code TrafficPermit} is the tool to block some resource by a given
@@ -31,7 +29,7 @@ import com.derby.nuke.IPermit;
  * @author Passyt
  *
  */
-public class TrafficPermit implements IPermit {
+public class TrafficPermit extends LocalPermit {
 
 	/**
 	 * time unit of blocking resource

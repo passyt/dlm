@@ -1,9 +1,7 @@
-package com.derby.nuke.memory;
+package com.derby.nuke.dlm.local;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import com.derby.nuke.IPermit;
 
 /**
  * {@code SemaphorePermit} is the tool to perform like a pool with a maximum
@@ -12,7 +10,7 @@ import com.derby.nuke.IPermit;
  * @author Passyt
  *
  */
-public class SemaphorePermit implements IPermit {
+public class SemaphorePermit extends LocalPermit {
 
 	private final Semaphore semaphore;
 	private final int total;

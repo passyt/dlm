@@ -1,8 +1,7 @@
-package com.derby.nuke.memory;
+package com.derby.nuke.dlm.local;
 
 import java.util.concurrent.TimeUnit;
 
-import com.derby.nuke.IPermit;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
@@ -13,7 +12,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author Passyt
  *
  */
-public class RateLimiterPermit implements IPermit {
+public class RateLimiterPermit extends LocalPermit {
 
 	private final RateLimiter rateLimiter;
 

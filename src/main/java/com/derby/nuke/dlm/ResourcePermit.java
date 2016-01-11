@@ -1,4 +1,4 @@
-package com.derby.nuke;
+package com.derby.nuke.dlm;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -7,12 +7,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Blocking to access some resource with a provided {@link IPermit} created by
  * {@link #permitBuilder}. This can be easily to support multiple types of
- * permit such as {@link com.derby.nuke.memory.SemaphorePermit},
- * {@link com.derby.nuke.memory.TrafficPermit} to access a limited resource
+ * permit such as {@link com.derby.nuke.dlm.local.SemaphorePermit},
+ * {@link com.derby.nuke.dlm.local.TrafficPermit} to access a limited resource
  * 
  * @author Passyt
- * @see com.derby.nuke.memory.SemaphorePermit
- * @see com.derby.nuke.memory.TrafficPermit
+ * @see com.derby.nuke.dlm.local.SemaphorePermit
+ * @see com.derby.nuke.dlm.local.TrafficPermit
  */
 public class ResourcePermit<R> implements IResourcePermit<R> {
 

@@ -1,10 +1,8 @@
-package com.derby.nuke.memory;
+package com.derby.nuke.dlm.local;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.derby.nuke.IPermit;
 
 /**
  * {@code BasicPermit} is a basic implemention of IPermit with
@@ -13,7 +11,7 @@ import com.derby.nuke.IPermit;
  * @author passyt
  *
  */
-public class BasicPermit implements IPermit {
+public class BasicPermit extends LocalPermit {
 
 	private final Lock lock = new ReentrantLock();
 
