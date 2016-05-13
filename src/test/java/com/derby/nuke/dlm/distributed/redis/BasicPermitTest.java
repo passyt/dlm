@@ -2,28 +2,29 @@ package com.derby.nuke.dlm.distributed.redis;
 
 import org.junit.After;
 import org.junit.Before;
+import org.redisson.RedissonClient;
+import org.redisson.test.RedissonClientFactory;
 
 import com.derby.nuke.dlm.IPermit;
 import com.derby.nuke.dlm.PermitTest;
-import com.lambdaworks.redis.RedisClient;
 
 public class BasicPermitTest extends PermitTest {
 
-	private RedisClient redisClient;
+	protected RedissonClient redisson;
 
 	@Before
 	public void init() {
-		redisClient = RedisClient.create("redis://10.200.152.40:6379/0");
+		redisson = RedissonClientFactory.getInstance().getClient();
 	}
 
 	@After
 	public void destory() {
-		this.redisClient.shutdown();
+		redisson.shutdown();
 	}
 
 	@Override
 	protected IPermit getPermit() {
-		return new BasicPermit(redisClient, "lock.test", 5);
+		return new BasicPermit(redisson, "lock.test");
 	}
 
 }

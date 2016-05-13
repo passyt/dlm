@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
- * {@code RateLimiterPermit} is a simple implemention to support 1000 queries
+ * {@code RateLimiterPermit} is a simple implementation to support 1000 queries
  * per second, 50M per second etc with
  * {@link com.google.common.util.concurrent.RateLimiter}
  * 
