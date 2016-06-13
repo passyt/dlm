@@ -5,21 +5,18 @@ import java.util.concurrent.TimeUnit;
 import org.redisson.RedissonClient;
 import org.redisson.core.RLock;
 
-import com.derby.nuke.dlm.distributed.DistributedPermit;
-
 /**
  * 
  * @author Passyt
  *
  */
-public class RedissonLockPermit extends DistributedPermit {
+public class RLockPermit extends RedissonPermit {
 
-	private final RedissonClient client;
 	private final RLock lock;
 
-	public RedissonLockPermit(RedissonClient client, String lockName) {
-		this.client = client;
-		this.lock = this.client.getLock(lockName);
+	public RLockPermit(RedissonClient client, String name) {
+		super(client);
+		this.lock = this.client.getLock(name);
 	}
 
 	@Override

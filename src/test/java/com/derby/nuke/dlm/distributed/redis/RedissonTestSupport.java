@@ -5,10 +5,9 @@ import org.junit.Before;
 import org.redisson.RedissonClient;
 import org.redisson.test.RedissonClientFactory;
 
-import com.derby.nuke.dlm.IPermit;
 import com.derby.nuke.dlm.PermitTest;
 
-public class RedissonLockPermitTest extends PermitTest {
+public abstract class RedissonTestSupport extends PermitTest {
 
 	protected RedissonClient redisson;
 
@@ -20,26 +19,6 @@ public class RedissonLockPermitTest extends PermitTest {
 	@After
 	public void destory() {
 		redisson.shutdown();
-	}
-
-	@Override
-	protected IPermit getPermit() {
-		return new RedissonLockPermit(redisson, "lock.test");
-	}
-	
-	@Override
-	protected int getTaskSize() {
-		return 500;
-	}
-	
-	@Override
-	protected int getThreadPoolSize() {
-		return 100;
-	}
-	
-	@Override
-	protected long getTaskCostTime() {
-		return 0L;
 	}
 
 }
