@@ -1,7 +1,8 @@
-package com.derby.nuke.dlm.local;
+package com.derby.nuke.dlm.core.local;
 
-import com.derby.nuke.dlm.IPermit;
-import com.derby.nuke.dlm.PermitTest;
+import com.derby.nuke.dlm.core.IPermit;
+import com.derby.nuke.dlm.core.PermitTest;
+import com.derby.nuke.dlm.core.local.ReentrantPermit;
 
 public class ReentrantPermitTest extends PermitTest {
 

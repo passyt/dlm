@@ -1,6 +1,7 @@
-package com.derby.nuke.dlm.distributed.redis;
+package com.derby.nuke.dlm.core.distributed.redis;
 
-import com.derby.nuke.dlm.IPermit;
+import com.derby.nuke.dlm.core.IPermit;
+import com.derby.nuke.dlm.core.distributed.redis.RLockPermit;
 
 public class RLockPermitTest extends RedissonTestSupport {
 

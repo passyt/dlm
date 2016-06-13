@@ -1,4 +1,4 @@
-package com.derby.nuke.dlm.local;
+package com.derby.nuke.dlm.core.local;
 
 import java.util.concurrent.TimeUnit;
 

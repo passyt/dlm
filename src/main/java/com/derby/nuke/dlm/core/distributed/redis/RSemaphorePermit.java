@@ -1,23 +1,27 @@
-package com.derby.nuke.dlm.local;
+package com.derby.nuke.dlm.core.distributed.redis;
 
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import org.redisson.RedissonClient;
+import org.redisson.core.RSemaphore;
+
 /**
- * {@code SemaphorePermit} is the tool to perform like a pool with a maximum
- * number of {@link #total}
  * 
  * @author Passyt
  *
  */
-public class SemaphorePermit extends LocalPermit {
+public class RSemaphorePermit extends RedissonPermit {
 
-	private final Semaphore semaphore;
-	private final int total;
+	private final RSemaphore semaphore;
 
-	public SemaphorePermit(int total) {
-		this.total = total;
-		this.semaphore = new Semaphore(total);
+	public RSemaphorePermit(RedissonClient client, String name, int count) {
+		super(client);
+		this.semaphore = client.getSemaphore(name);
+		// TODO how to recover state while network is broken or app is restart
+		if (this.semaphore.isExists()) {
+			this.semaphore.delete();
+		}
+		this.semaphore.setPermits(count);
 	}
 
 	@Override
@@ -47,10 +51,6 @@ public class SemaphorePermit extends LocalPermit {
 	@Override
 	public void release() {
 		semaphore.release();
-	}
-
-	public int getTotal() {
-		return total;
 	}
 
 }

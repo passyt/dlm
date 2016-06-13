@@ -1,11 +1,11 @@
-package com.derby.nuke.dlm;
+package com.derby.nuke.dlm.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.derby.nuke.dlm.local.LocalPermit;
+import com.derby.nuke.dlm.core.local.LocalPermit;
 
 public class MultiPermit extends LocalPermit {
 

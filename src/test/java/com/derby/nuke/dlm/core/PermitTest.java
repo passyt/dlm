@@ -1,4 +1,4 @@
-package com.derby.nuke.dlm;
+package com.derby.nuke.dlm.core;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.derby.nuke.dlm.core.IPermit;
 import com.google.common.collect.Lists;
 
 public abstract class PermitTest {

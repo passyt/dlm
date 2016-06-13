@@ -1,6 +1,6 @@
-package com.derby.nuke.dlm.distributed;
+package com.derby.nuke.dlm.core.distributed;
 
-import com.derby.nuke.dlm.IPermit;
+import com.derby.nuke.dlm.core.IPermit;
 
 /**
  * 

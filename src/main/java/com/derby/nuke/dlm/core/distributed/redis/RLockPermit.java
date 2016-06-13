@@ -1,4 +1,4 @@
-package com.derby.nuke.dlm.distributed.redis;
+package com.derby.nuke.dlm.core.distributed.redis;
 
 import java.util.concurrent.TimeUnit;
 
