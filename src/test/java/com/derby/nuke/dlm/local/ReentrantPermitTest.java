@@ -3,11 +3,16 @@ package com.derby.nuke.dlm.local;
 import com.derby.nuke.dlm.IPermit;
 import com.derby.nuke.dlm.PermitTest;
 
-public class RateLimiterPermitTest extends PermitTest {
+public class ReentrantPermitTest extends PermitTest {
 
 	@Override
 	protected IPermit getPermit() {
-		return new RateLimiterPermit(5);
+		return new ReentrantPermit();
+	}
+	
+	@Override
+	protected long getTaskCostTime() {
+		return 0L;
 	}
 
 }

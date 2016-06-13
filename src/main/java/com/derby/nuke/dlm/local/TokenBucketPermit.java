@@ -12,7 +12,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author Passyt
  *
  */
-public class RateLimiterPermit extends LocalPermit {
+public class TokenBucketPermit extends LocalPermit {
 
 	private final RateLimiter rateLimiter;
 
@@ -38,33 +38,27 @@ public class RateLimiterPermit extends LocalPermit {
 	 * @throws IllegalArgumentException
 	 *             if {@code permitsPerSecond} is negative or zero
 	 */
-	public RateLimiterPermit(double permitsPerSecond) {
+	public TokenBucketPermit(double permitsPerSecond) {
 		rateLimiter = RateLimiter.create(permitsPerSecond);
 	}
 
 	@Override
-	public String acquire() throws InterruptedException {
+	public void acquire() {
 		rateLimiter.acquire();
-		return DEFAULT_TICKET;
 	}
 
 	@Override
-	public String tryAcquire(long timeout, TimeUnit unit) throws InterruptedException {
-		if (!rateLimiter.tryAcquire(timeout, unit)) {
-			throw new InterruptedException("Timeout to acquire a permit within " + timeout + " " + unit);
-		}
-
-		return DEFAULT_TICKET;
+	public boolean tryAcquire() {
+		return rateLimiter.tryAcquire();
 	}
 
-	/**
-	 * do nothing to call this method as it's control by
-	 * {@link #backgroundRemoveSchedule} to release lock
-	 */
 	@Override
-	@Deprecated
-	public boolean release(String ticketId) {
-		return true;
+	public boolean tryAcquire(long timeout, TimeUnit unit) {
+		return rateLimiter.tryAcquire(timeout, unit);
+	}
+
+	@Override
+	public void release() {
 	}
 
 }

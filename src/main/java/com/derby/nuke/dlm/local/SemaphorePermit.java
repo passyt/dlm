@@ -21,24 +21,32 @@ public class SemaphorePermit extends LocalPermit {
 	}
 
 	@Override
-	public String acquire() throws InterruptedException {
-		semaphore.acquire();
-		return DEFAULT_TICKET;
-	}
-
-	@Override
-	public String tryAcquire(long timeout, TimeUnit unit) throws InterruptedException {
-		if (!semaphore.tryAcquire(timeout, unit)) {
-			throw new InterruptedException("Timeout to acquire a permit within " + timeout + " " + unit);
+	public void acquire() {
+		try {
+			semaphore.acquire();
+		} catch (InterruptedException e) {
+			throw new IllegalStateException(e);
 		}
-
-		return DEFAULT_TICKET;
 	}
 
 	@Override
-	public boolean release(String ticketId) {
+	public boolean tryAcquire() {
+		return semaphore.tryAcquire();
+	}
+
+	@Override
+	public boolean tryAcquire(long timeout, TimeUnit unit) {
+		try {
+			return semaphore.tryAcquire(timeout, unit);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
+	}
+
+	@Override
+	public void release() {
 		semaphore.release();
-		return true;
 	}
 
 	public int getTotal() {

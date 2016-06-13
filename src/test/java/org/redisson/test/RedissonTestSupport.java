@@ -18,7 +18,9 @@ public class RedissonTestSupport {
 
 	@After
 	public void destory() {
-		redisson.shutdown();
+		if(redisson != null){
+			redisson.shutdown();
+		}
 	}
 
 }

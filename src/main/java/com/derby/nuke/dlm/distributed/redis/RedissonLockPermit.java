@@ -12,32 +12,38 @@ import com.derby.nuke.dlm.distributed.DistributedPermit;
  * @author Passyt
  *
  */
-public class BasicPermit extends DistributedPermit {
+public class RedissonLockPermit extends DistributedPermit {
 
 	private final RedissonClient client;
 	private final RLock lock;
 
-	public BasicPermit(RedissonClient client, String lockName) {
+	public RedissonLockPermit(RedissonClient client, String lockName) {
 		this.client = client;
 		this.lock = this.client.getLock(lockName);
 	}
 
 	@Override
-	public String acquire() throws InterruptedException {
+	public void acquire() {
 		lock.lock();
-		return null;
 	}
 
 	@Override
-	public String tryAcquire(long timeout, TimeUnit unit) throws InterruptedException {
-		lock.lock(timeout, unit);
-		return null;
+	public boolean tryAcquire() {
+		return lock.tryLock();
 	}
 
 	@Override
-	public boolean release(String ticketId) {
+	public boolean tryAcquire(long timeout, TimeUnit unit) {
+		try {
+			return lock.tryLock(timeout, unit);
+		} catch (InterruptedException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Override
+	public void release() {
 		lock.unlock();
-		return true;
 	}
 
 }
