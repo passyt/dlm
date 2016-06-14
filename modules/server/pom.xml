@@ -8,6 +8,13 @@
   </parent>
   <artifactId>dlm-server</artifactId>
   
+  <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+  
   <dependencies>
 		<dependency>
 			<groupId>com.derby.nuke</groupId>
@@ -15,5 +22,5 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 </project>
