@@ -1,0 +1,20 @@
+handlers:
+  - hander:
+      handler: reentrantPermit
+      uri: /single/reentrant
+  - hander:
+      handler: semaphorePermit
+      uri: /single/semaphore
+  - hander:
+      handler: leakyBucketPermit
+      uri: /single/leakybucket
+  - hander:
+      handler: tokenBucketPermit
+      uri: /single/tokenbucket
+      
+  - hander:
+      handler: rLockPermit
+      uri: /redis/basic
+  - hander:
+      handler: rSemaphorePermit
+      uri: /redis/semaphore
