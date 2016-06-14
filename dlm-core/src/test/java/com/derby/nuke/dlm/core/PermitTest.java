@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 
 public abstract class PermitTest {
 
-	protected Logger log = LoggerFactory.getLogger(PermitTest.class);
+	protected Logger log = LoggerFactory.getLogger(getClass());
 
 	protected abstract IPermit getPermit();
 

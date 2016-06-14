@@ -29,7 +29,7 @@ public class RedissonClientFactory {
 			}
 
 			try {
-				this.client = Redisson.create(Config.fromJSON(RedissonClientFactory.class.getResourceAsStream("redisson.json")));
+				this.client = Redisson.create(Config.fromJSON(RedissonClientFactory.class.getClassLoader().getResourceAsStream("redisson.json")));
 				return this.client;
 			} catch (IOException e) {
 				throw new IllegalStateException(e);
