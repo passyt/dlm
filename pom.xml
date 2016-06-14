@@ -8,7 +8,7 @@
 	<name>Distributed lock manager</name>
 
 	<modules>
-		<module>dlm-core</module>
-		<module>client</module>
+		<module>modules/core</module>
+		<module>modules/client</module>
 	</modules>
 </project>
