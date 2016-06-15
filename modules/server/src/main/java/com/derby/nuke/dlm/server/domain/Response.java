@@ -23,6 +23,7 @@ public class Response {
 
 	private final RequestType type;
 	private Object message;
+	private boolean success = true;
 
 	public Response(RequestType type) {
 		this.type = type;
@@ -70,6 +71,10 @@ public class Response {
 				buf.writeByte(((Byte) obj).byteValue());
 			break;
 		}
+	}
+	
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 
 	public Object getMessage() {
