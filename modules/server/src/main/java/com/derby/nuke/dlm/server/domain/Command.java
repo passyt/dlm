@@ -43,6 +43,9 @@ public class Command {
 		switch (type) {
 		case HTTP:
 		case WebSocketText:
+			if (readIndex > dataFrames.size() - 1) {
+				return null;
+			}
 			return (String) this.dataFrames.get(this.readIndex++);
 		case Socket:
 		case WebSocketBinary:

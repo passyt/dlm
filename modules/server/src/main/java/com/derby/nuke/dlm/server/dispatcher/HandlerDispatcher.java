@@ -37,6 +37,7 @@ public class HandlerDispatcher implements Runnable {
 
 	public HandlerDispatcher() {
 		this(Executors.newFixedThreadPool(10));
+		new Thread(this).start();
 	}
 
 	public HandlerDispatcher(Executor messageExecutor) {
