@@ -1,5 +1,7 @@
 package com.derby.nuke.dlm.server.netty;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.derby.nuke.dlm.server.dispatcher.HandlerDispatcher;
 
 import io.netty.channel.ChannelInitializer;
@@ -18,7 +20,9 @@ public abstract class ServerInitializer extends ChannelInitializer<SocketChannel
 	protected HandlerDispatcher handlerDispatcher;
 
 	public void init() {
-		new Thread(this.handlerDispatcher).start();
+		Thread thread = new Thread(this.handlerDispatcher);
+		thread.setName(getClass().getSimpleName() + "-Background");
+		thread.start();
 	}
 
 	public void initChannel(SocketChannel ch) throws Exception {
@@ -30,7 +34,7 @@ public abstract class ServerInitializer extends ChannelInitializer<SocketChannel
 
 	protected abstract void init(ChannelPipeline pipeline);
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(@Value("netty.default.read.timeout") int timeout) {
 		this.timeout = timeout;
 	}
 

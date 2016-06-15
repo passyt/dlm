@@ -1,14 +1,15 @@
 package com.derby.nuke.dlm.server.netty;
 
 import com.derby.nuke.dlm.server.dispatcher.HandlerDispatcher;
+import com.derby.nuke.dlm.server.domain.Request;
+import com.derby.nuke.dlm.server.domain.RequestType;
+import com.derby.nuke.dlm.server.utils.HttpUtils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
@@ -21,6 +22,11 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
+/**
+ * 
+ * @author Passyt
+ *
+ */
 public class ServerAdapter extends SimpleChannelInboundHandler<Object> {
 
 	private static final String WEBSOCKET_PATH = "/websocket";
@@ -65,7 +71,7 @@ public class ServerAdapter extends SimpleChannelInboundHandler<Object> {
 	}
 
 	private void socketRequest(ChannelHandlerContext ctx, Object msg) throws Exception {
-		this.handlerDispatcher.addMessage(new GameRequest(ctx, ERequestType.SOCKET, msg));
+		this.handlerDispatcher.dispatch(new Request(RequestType.Socket, ctx, msg));
 	}
 
 	private void httpFullRequest(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -76,7 +82,7 @@ public class ServerAdapter extends SimpleChannelInboundHandler<Object> {
 		}
 
 		if (req.getMethod() == HttpMethod.POST) {
-			this.handlerDispatcher.addMessage(new GameRequest(ctx, ERequestType.HTTP, msg));
+			this.handlerDispatcher.dispatch(new Request(RequestType.HTTP, ctx, msg));
 		} else if (req.getMethod() == HttpMethod.GET) {
 			if (WEBSOCKET_PATH.equals(req.getUri())) {
 				WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(req), null, false);
@@ -112,9 +118,9 @@ public class ServerAdapter extends SimpleChannelInboundHandler<Object> {
 
 		try {
 			if ((frame instanceof TextWebSocketFrame)) {
-				this.handlerDispatcher.addMessage(new GameRequest(ctx, ERequestType.WEBSOCKET_TEXT, msg));
+				this.handlerDispatcher.dispatch(new Request(RequestType.WebSocketText, ctx, msg));
 			} else
-				this.handlerDispatcher.addMessage(new GameRequest(ctx, ERequestType.WEBSOCKET_BINARY, msg));
+				this.handlerDispatcher.dispatch(new Request(RequestType.WebSocketBinary, ctx, msg));
 		} catch (Exception e) {
 		}
 	}

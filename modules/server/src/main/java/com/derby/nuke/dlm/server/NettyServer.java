@@ -35,16 +35,21 @@ public class NettyServer {
 	}
 
 	public void run() throws Exception {
-		try {
-			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(this.initializer);
+		Thread thread = new Thread(() -> {
+			try {
+				ServerBootstrap b = new ServerBootstrap();
+				b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(this.initializer);
 
-			logger.info("Server started at port {} with {}", port, initializer);
-			Channel ch = b.bind(this.port).sync().channel();
-			ch.closeFuture().sync();
-		} finally {
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();
-		}
+				logger.info("Server started at port {} with {}", port, initializer);
+				Channel ch = b.bind(this.port).sync().channel();
+				ch.closeFuture().sync();
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			} finally {
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();
+			}
+		});
+		thread.start();
 	}
 }

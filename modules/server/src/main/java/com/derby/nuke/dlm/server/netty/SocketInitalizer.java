@@ -1,9 +1,12 @@
 package com.derby.nuke.dlm.server.netty;
 
+import org.springframework.stereotype.Service;
+
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 
+@Service
 public class SocketInitalizer extends ServerInitializer {
 
 	@Override
