@@ -1,6 +1,6 @@
-package com.derby.nuke.dlm.core.standalone;
+package com.derbysoft.nuke.dlm.core.standalone;
 
-import com.derby.nuke.dlm.IPermit;
+import com.derbysoft.nuke.dlm.IPermit;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.derby.nuke.dlm;
+package com.derbysoft.nuke.dlm;
 
 public interface IPermitResource {
 

@@ -1,4 +1,4 @@
-package com.derby.nuke.dlm.core.standalone;
+package com.derbysoft.nuke.dlm.core.standalone;
 
 import com.google.common.util.concurrent.RateLimiter;
 
