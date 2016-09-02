@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package com.derbysoft.nuke.dlm.server.model;
+
+message AcquireRequest {
+    string permitId = 1;
+}
+
+message AcquireResponse {
+    string permitId = 1;
+    string errorMessage = 2;
+}
+
+message TryAcquireRequest {
+    string permitId = 1;
+    int64 timeout = 2;
+    enum TimeUnit {
+        DAYS = 0;
+        HOURS = 1;
+        MICROSECONDS = 2;
+        MILLISECONDS = 3;
+        MINUTES = 4;
+        NANOSECONDS = 5;
+        SECONDS = 6;
+    }
+    TimeUnit timeUnit = 7;
+}
+
+message TryAcquireResponse {
+    string permitId = 1;
+    string errorMessage = 2;
+    bool successful = 3;
+}
+
+message PermitResourceRequest{
+    string permitId = 1;
+    string permitClassName = 2;
+    string arguments = 3;
+}
+
+message PermitResourceResponse {
+    string permitId = 1;
+    string errorMessage = 2;
+    bool successful = 3;
+}
+

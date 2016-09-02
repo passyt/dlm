@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @author Passyt
  *
  */
-public class TokenBucketPermit extends LocalPermit {
+public class TokenBucketPermit extends StandalonePermit {
 
 	private final RateLimiter rateLimiter;
 

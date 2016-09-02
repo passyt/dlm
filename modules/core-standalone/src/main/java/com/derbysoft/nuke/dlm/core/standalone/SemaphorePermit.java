@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author Passyt
  *
  */
-public class SemaphorePermit extends LocalPermit {
+public class SemaphorePermit extends StandalonePermit {
 
 	private final Semaphore semaphore;
 	private final int total;

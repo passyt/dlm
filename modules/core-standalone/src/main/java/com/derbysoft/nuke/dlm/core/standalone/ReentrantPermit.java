@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author passyt
  *
  */
-public class ReentrantPermit extends LocalPermit {
+public class ReentrantPermit extends StandalonePermit {
 
 	private final Lock lock = new ReentrantLock();
 
