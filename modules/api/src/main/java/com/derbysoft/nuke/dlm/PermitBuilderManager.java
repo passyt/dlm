@@ -9,16 +9,16 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Created by passyt on 16-9-3.
  */
-public class PermitManager {
+public class PermitBuilderManager {
 
-    private static final Logger log = LoggerFactory.getLogger(PermitManager.class);
+    private static final Logger log = LoggerFactory.getLogger(PermitBuilderManager.class);
     private final ConcurrentMap<String, IPermitBuilder> builders = new ConcurrentHashMap<>();
-    private static final PermitManager INSTANCE = new PermitManager();
+    private static final PermitBuilderManager INSTANCE = new PermitBuilderManager();
 
-    private PermitManager() {
+    private PermitBuilderManager() {
     }
 
-    public static PermitManager getInstance() {
+    public static PermitBuilderManager getInstance() {
         return INSTANCE;
     }
 

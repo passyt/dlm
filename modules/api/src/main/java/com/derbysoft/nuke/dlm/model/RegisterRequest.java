@@ -6,15 +6,15 @@ import com.google.common.base.Objects;
 /**
  * Created by passyt on 16-9-3.
  */
-public class PermitResourceRequest extends BaseRequest {
+public class RegisterRequest extends BaseRequest {
 
     private String permitResourceName;
     private String permitSpec;
 
-    public PermitResourceRequest() {
+    public RegisterRequest() {
     }
 
-    public PermitResourceRequest(String permitId, String permitResourceName, String permitSpec) {
+    public RegisterRequest(String permitId, String permitResourceName, String permitSpec) {
         super(permitId);
         this.permitResourceName = permitResourceName;
         this.permitSpec = permitSpec;
@@ -39,9 +39,9 @@ public class PermitResourceRequest extends BaseRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PermitResourceRequest)) return false;
+        if (!(o instanceof RegisterRequest)) return false;
         if (!super.equals(o)) return false;
-        PermitResourceRequest that = (PermitResourceRequest) o;
+        RegisterRequest that = (RegisterRequest) o;
         return Objects.equal(permitResourceName, that.permitResourceName) &&
                 Objects.equal(permitSpec, that.permitSpec);
     }

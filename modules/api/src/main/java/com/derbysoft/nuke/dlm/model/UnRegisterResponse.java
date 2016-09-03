@@ -6,20 +6,21 @@ import com.google.common.base.Objects;
 /**
  * Created by passyt on 16-9-3.
  */
-public class PermitResourceResponse extends BaseResponse {
+public class UnRegisterResponse extends BaseResponse {
 
     private boolean successful;
 
-    public PermitResourceResponse() {
+    public UnRegisterResponse() {
     }
 
-    public PermitResourceResponse(String permitId, boolean successful) {
+    public UnRegisterResponse(String permitId, boolean successful) {
         super(permitId);
         this.successful = successful;
     }
 
-    public PermitResourceResponse(String permitId, String errorMessage) {
+    public UnRegisterResponse(String permitId, String errorMessage, boolean successful) {
         super(permitId, errorMessage);
+        this.successful = successful;
     }
 
     public boolean isSuccessful() {
@@ -33,9 +34,9 @@ public class PermitResourceResponse extends BaseResponse {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PermitResourceResponse)) return false;
+        if (!(o instanceof UnRegisterResponse)) return false;
         if (!super.equals(o)) return false;
-        PermitResourceResponse that = (PermitResourceResponse) o;
+        UnRegisterResponse that = (UnRegisterResponse) o;
         return successful == that.successful;
     }
 

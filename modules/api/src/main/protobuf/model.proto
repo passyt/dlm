@@ -33,15 +33,24 @@ message TryAcquireResponse {
     bool successful = 3;
 }
 
-message PermitResourceRequest{
+message RegisterRequest {
     string permitId = 1;
     string permitResourceName = 2;
     string permitSpec = 3;
 }
 
-message PermitResourceResponse {
+message RegisterResponse {
     string permitId = 1;
     string errorMessage = 2;
     bool successful = 3;
 }
 
+message UnRegisterRequest {
+    string permitId = 1;
+}
+
+message UnRegisterResponse {
+    string permitId = 1;
+    string errorMessage = 2;
+    bool successful = 3;
+}
