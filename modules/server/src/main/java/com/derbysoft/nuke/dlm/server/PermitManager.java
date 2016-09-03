@@ -37,6 +37,11 @@ public class PermitManager implements IPermitManager {
     }
 
     @Override
+    public boolean isExisting(String permitId) {
+        return permits.containsKey(permitId);
+    }
+
+    @Override
     public IPermit getPermit(String permitId) {
         return permits.get(permitId);
     }

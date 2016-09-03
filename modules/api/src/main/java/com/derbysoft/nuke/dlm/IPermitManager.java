@@ -17,6 +17,12 @@ public interface IPermitManager {
     boolean unregister(String permitId);
 
     /**
+     * @param permitId
+     * @return
+     */
+    boolean isExisting(String permitId);
+
+    /**
      * @param permitId the id of permit in register server
      * @return
      */

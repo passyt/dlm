@@ -54,3 +54,13 @@ message UnRegisterResponse {
     string errorMessage = 2;
     bool successful = 3;
 }
+
+message ExistingRequest {
+    string permitId = 1;
+}
+
+message ExistingResponse {
+    string permitId = 1;
+    string errorMessage = 2;
+    bool existing = 3;
+}
