@@ -2,11 +2,11 @@ package com.derbysoft.nuke.dlm.server;
 
 import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.IPermitManager;
+import com.derbysoft.nuke.dlm.PermitBuilderManager;
 import com.derbysoft.nuke.dlm.PermitSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -46,14 +46,13 @@ public class PermitManager implements IPermitManager {
         return permits.get(permitId);
     }
 
-    protected IPermit buildPermit(String permitClassName, PermitSpec spec) {
-        try {
-            Class<?> clazz = Class.forName(permitClassName);
-            Constructor<IPermit> constructor = (Constructor<IPermit>) clazz.getConstructor(String.class);
-            return constructor.newInstance(spec);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("No permit by class " + permitClassName + " with spec " + spec, e);
+    protected IPermit buildPermit(String resourceName, PermitSpec spec) {
+        IPermit permit = PermitBuilderManager.getInstance().buildPermit(resourceName, spec);
+        if (permit == null) {
+            throw new IllegalArgumentException("Permit not found by resource " + resourceName + " with spec " + spec);
         }
+
+        return permit;
     }
 
 }

@@ -35,45 +35,44 @@ public class PermitServer {
     private final int tcpPort;
     private final int httpPort;
     private final ServerBootstrap bootstrap;
-    private Channel channel;
+
+    private final EventLoopGroup bossGroup = new NioEventLoopGroup();
+    private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
     @Autowired
     public PermitServer(@Value("${server.tcp.port}") int tcpPort, @Value("${server.http.port}") int httpPort) {
         this.tcpPort = tcpPort;
         this.httpPort = httpPort;
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
         bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.DEBUG))
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
 
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline()
-                                .addLast("encoder", new StringEncoder())
                                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
                                 .addLast("protobufDecoder", new ProtobufDecoder(com.derbysoft.nuke.dlm.model.Protobuf.AcquireRequest.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("protobufEncoder", new ProtobufEncoder())
                                 .addLast("handler", new PermitServerHandler());
                     }
-                })
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+                });
     }
 
     @PostConstruct
     public void startup() throws Exception {
         log.info("Startup server on TCP {}", tcpPort);
-        channel = bootstrap.bind(tcpPort).sync().channel().closeFuture().sync().channel();
+        bootstrap.bind(tcpPort).sync().channel().closeFuture().sync();
     }
 
     @PreDestroy
     public void shutdown() {
-        channel.close();
-        channel.parent().close();
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 }

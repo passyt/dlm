@@ -31,7 +31,7 @@ public class PermitBuilderManager {
         }
     }
 
-    public IPermit getPermit(String resourceName, PermitSpec spec) {
+    public IPermit buildPermit(String resourceName, PermitSpec spec) {
         IPermitBuilder builder = builders.get(resourceName);
         if (builder == null) {
             return null;
