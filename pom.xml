@@ -26,8 +26,7 @@
 
     <modules>
         <module>modules/api</module>
-        <module>modules/model-protobuf</module>
-        <module>modules/core-standalone</module>
+        <module>modules/standalone</module>
         <module>modules/client</module>
         <module>modules/server</module>
     </modules>

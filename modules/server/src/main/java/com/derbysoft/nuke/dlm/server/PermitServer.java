@@ -1,7 +1,10 @@
 package com.derbysoft.nuke.dlm.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -52,7 +55,7 @@ public class PermitServer {
                         socketChannel.pipeline()
                                 .addLast("encoder", new StringEncoder())
                                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
-                                .addLast("protobufDecoder", new ProtobufDecoder(com.derbysoft.nuke.dlm.server.model.Model.AcquireRequest.getDefaultInstance()))
+                                .addLast("protobufDecoder", new ProtobufDecoder(com.derbysoft.nuke.dlm.model.Protobuf.AcquireRequest.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("protobufEncoder", new ProtobufEncoder())
                                 .addLast("handler", new PermitServerHandler());

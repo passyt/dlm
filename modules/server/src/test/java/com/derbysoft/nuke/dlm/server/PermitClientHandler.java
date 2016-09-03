@@ -1,17 +1,16 @@
 package com.derbysoft.nuke.dlm.server;
 
-import com.derbysoft.nuke.dlm.server.model.Model;
-import io.netty.channel.ChannelHandlerAdapter;
+import com.derbysoft.nuke.dlm.model.Protobuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
  * Created by passyt on 16-9-2.
  */
-public class PermitClientHandler extends SimpleChannelInboundHandler<Model.AcquireRequest> {
+public class PermitClientHandler extends SimpleChannelInboundHandler<Protobuf.AcquireRequest> {
 
     @Override
-    protected void messageReceived(ChannelHandlerContext channelHandlerContext, Model.AcquireRequest acquireRequest) throws Exception {
+    protected void messageReceived(ChannelHandlerContext channelHandlerContext, Protobuf.AcquireRequest acquireRequest) throws Exception {
 
     }
 

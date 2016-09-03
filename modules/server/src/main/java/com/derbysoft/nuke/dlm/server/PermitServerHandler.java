@@ -1,6 +1,6 @@
 package com.derbysoft.nuke.dlm.server;
 
-import com.derbysoft.nuke.dlm.server.model.Model;
+import com.derbysoft.nuke.dlm.model.Protobuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by passyt on 16-9-2.
  */
-public class PermitServerHandler extends SimpleChannelInboundHandler<Model.AcquireRequest> {
+public class PermitServerHandler extends SimpleChannelInboundHandler<Protobuf.AcquireRequest> {
 
     private static Logger log = LoggerFactory.getLogger(PermitServerHandler.class);
 
@@ -19,7 +19,7 @@ public class PermitServerHandler extends SimpleChannelInboundHandler<Model.Acqui
         log.debug("New connection from {}", ctx.channel().remoteAddress().toString());
     }
 
-    protected void messageReceived(ChannelHandlerContext channelHandlerContext, Model.AcquireRequest acquireRequest) throws Exception {
+    protected void messageReceived(ChannelHandlerContext channelHandlerContext, Protobuf.AcquireRequest acquireRequest) throws Exception {
         System.out.println(acquireRequest.getPermitId());
         channelHandlerContext.close();
     }

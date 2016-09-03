@@ -3,12 +3,12 @@ package com.derbysoft.nuke.dlm;
 public interface IPermitResource {
 
     /**
-     * @param permitId        the id of permit in register server
-     * @param permitClassName permit class name
-     * @param arguments       arguments in constructor
+     * @param permitId           the id of permit in register server
+     * @param permitResourceName permit resource name(class name or alias name)
+     * @param spec               permit spec
      * @return
      */
-    boolean register(String permitId, String permitClassName, Object... arguments);
+    boolean register(String permitId, String permitResourceName, PermitSpec spec);
 
     /**
      * @param permitId the id of permit in register server

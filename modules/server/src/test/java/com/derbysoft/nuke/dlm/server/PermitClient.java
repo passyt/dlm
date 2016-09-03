@@ -1,16 +1,17 @@
 package com.derbysoft.nuke.dlm.server;
 
-import com.derbysoft.nuke.dlm.server.model.Model;
+import com.derbysoft.nuke.dlm.model.Protobuf;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by passyt on 16-9-2.
@@ -46,7 +47,7 @@ public class PermitClient {
         channel = bootstrap.connect(host, port).sync().channel();
     }
 
-    public void sendMessage(Model.AcquireRequest request) throws InterruptedException {
+    public void sendMessage(Protobuf.AcquireRequest request) throws InterruptedException {
         System.out.println(request);
         channel.writeAndFlush(request);
     }
@@ -58,11 +59,11 @@ public class PermitClient {
 
     public static void main(String[] args) throws Exception {
         PermitClient client = new PermitClient("127.0.0.1", 8081);
-        try{
-            Model.AcquireRequest.Builder builder = Model.AcquireRequest.newBuilder();
+        try {
+            Protobuf.AcquireRequest.Builder builder = Protobuf.AcquireRequest.newBuilder();
             builder.setPermitId("123");
             client.sendMessage(builder.build());
-        }finally {
+        } finally {
             client.shutdown();
         }
     }
