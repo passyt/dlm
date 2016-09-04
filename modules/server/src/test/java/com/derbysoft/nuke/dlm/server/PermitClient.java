@@ -1,14 +1,12 @@
 package com.derbysoft.nuke.dlm.server;
 
 import com.derbysoft.nuke.dlm.model.IPermitRequest;
+import com.derbysoft.nuke.dlm.model.IPermitResponse;
 import com.derbysoft.nuke.dlm.model.RegisterRequest;
 import com.derbysoft.nuke.dlm.server.codec.PermitRequest2ProtoBufEncoder;
 import com.derbysoft.nuke.dlm.server.codec.ProtoBuf2PermitResponseDecoder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -69,13 +67,14 @@ public class PermitClient {
                                 .addLast("handler", new PermitClientHandler());
                     }
                 });
-        channel = bootstrap.connect(host, port).sync().channel().closeFuture().sync().channel();
-//        channel = bootstrap.connect(host, port).sync().channel();
+//        channel = bootstrap.connect(host, port).sync().channel().closeFuture().sync().channel();
+        channel = bootstrap.connect(host, port).sync().channel();
     }
 
-    public void sendMessage(IPermitRequest request) throws InterruptedException {
+    public <RS extends IPermitResponse> RS sendMessage(IPermitRequest<RS> request) throws InterruptedException {
         log.info("Send request >>| {}", request);
         channel.writeAndFlush(request).sync();
+        return null;
     }
 
     public void shutdown() {
@@ -85,7 +84,7 @@ public class PermitClient {
     public static void main(String[] args) throws Exception {
         PermitClient client = new PermitClient("127.0.0.1", 8081);
         List<Callable<Void>> tasks = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10000; i++) {
             int finalI = i;
             tasks.add(() -> {
                 client.sendMessage(new RegisterRequest(new Random().nextInt(100) + "-" + finalI, "SemaphorePermit", "total=100"));

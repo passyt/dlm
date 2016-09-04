@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by passyt on 16-9-2.
@@ -25,21 +27,31 @@ public class PermitServer {
 
     private static final Logger log = LoggerFactory.getLogger(PermitServer.class);
 
-    private final int port;
-    private final PermitServerInitializer initializer;
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
-
-    private final ServerBootstrap bootstrap;
+    private final Map<Integer, PermitServerInitializer> initializers;
 
     @Autowired
-    public PermitServer(@Value("${server.tcp.port}") int port, @Qualifier("permitServerTcpInitializer") PermitServerInitializer initializer, @Qualifier("bossGroup") EventLoopGroup bossGroup, @Qualifier("workerGroup") EventLoopGroup workerGroup) {
-        this.port = port;
-        this.initializer = initializer;
+    public PermitServer(@Qualifier("bossGroup") EventLoopGroup bossGroup, @Qualifier("workerGroup") EventLoopGroup workerGroup, @Qualifier("permServerInitializers") Map<Integer, PermitServerInitializer> initializers) {
         this.bossGroup = bossGroup;
         this.workerGroup = workerGroup;
+        this.initializers = initializers;
 
-        bootstrap = new ServerBootstrap();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            shutdown();
+        }, "Netty-Shutdown"));
+    }
+
+    @PostConstruct
+    public void startup() {
+        for (Map.Entry<Integer, PermitServerInitializer> each : initializers.entrySet()) {
+            startup(each.getKey(), each.getValue());
+        }
+    }
+
+    protected PermitServer startup(int port, PermitServerInitializer initializer) {
+        log.info("Startup server on {} port {}", initializer.getType(), port);
+        ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 100)
@@ -49,20 +61,26 @@ public class PermitServer {
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(initializer);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            shutdown();
-        }));
-    }
-
-    @PostConstruct
-    public void startup() throws Exception {
-        log.info("Startup server on {} port {}", initializer.getType(), port);
-        bootstrap.bind(port).sync().channel().closeFuture().sync();
+        Thread thread = new Thread(() -> {
+            try {
+                bootstrap.bind(port).sync().channel().closeFuture().sync();
+            } catch (InterruptedException e) {
+                shutdown();
+            }
+        }, "Server-" + initializer.getType() + "@" + port);
+        thread.setDaemon(false);
+        thread.start();
+        return this;
     }
 
     @PreDestroy
     public void shutdown() {
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
+        if (bossGroup != null) {
+            bossGroup.shutdownGracefully();
+        }
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully();
+        }
     }
+
 }
