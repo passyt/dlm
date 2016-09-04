@@ -8,8 +8,8 @@ import com.google.common.base.Objects;
  */
 public class BaseResponse implements IPermitResponse {
 
-    private String permitId;
-    private String errorMessage;
+    protected String permitId;
+    protected String errorMessage;
 
     public BaseResponse() {
     }

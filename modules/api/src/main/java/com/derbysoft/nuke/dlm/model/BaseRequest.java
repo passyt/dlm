@@ -1,16 +1,36 @@
 package com.derbysoft.nuke.dlm.model;
 
+import com.derbysoft.nuke.dlm.IPermitManager;
+import com.derbysoft.nuke.dlm.exception.PermitException;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
  * Created by passyt on 16-9-3.
  */
-public abstract class BaseRequest implements IPermitRequest{
+public abstract class BaseRequest<RS extends BaseResponse> implements IPermitRequest<RS> {
 
     protected String permitId;
 
     public BaseRequest() {
+    }
+
+    protected abstract RS newReponse();
+
+    protected abstract void doExecuteBy(IPermitManager manager, RS rs);
+
+    @Override
+    public RS executeBy(IPermitManager manager) {
+        RS rs = newReponse();
+        rs.setPermitId(permitId);
+        try {
+            doExecuteBy(manager, rs);
+        } catch (PermitException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PermitException(e);
+        }
+        return rs;
     }
 
     public BaseRequest(String permitId) {

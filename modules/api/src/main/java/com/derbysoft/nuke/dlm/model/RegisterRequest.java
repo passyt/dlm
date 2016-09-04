@@ -1,15 +1,17 @@
 package com.derbysoft.nuke.dlm.model;
 
+import com.derbysoft.nuke.dlm.IPermitManager;
+import com.derbysoft.nuke.dlm.PermitSpec;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
  * Created by passyt on 16-9-3.
  */
-public class RegisterRequest extends BaseRequest {
+public class RegisterRequest extends BaseRequest<RegisterResponse> {
 
     private String permitResourceName;
-    private String permitSpec;
+    private PermitSpec permitSpec;
 
     public RegisterRequest() {
     }
@@ -17,7 +19,17 @@ public class RegisterRequest extends BaseRequest {
     public RegisterRequest(String permitId, String permitResourceName, String permitSpec) {
         super(permitId);
         this.permitResourceName = permitResourceName;
-        this.permitSpec = permitSpec;
+        this.permitSpec = new PermitSpec(permitSpec);
+    }
+
+    @Override
+    protected RegisterResponse newReponse() {
+        return new RegisterResponse();
+    }
+
+    @Override
+    protected void doExecuteBy(IPermitManager manager, RegisterResponse registerResponse) {
+        registerResponse.setSuccessful(manager.register(getPermitId(), getPermitResourceName(), getPermitSpec()));
     }
 
     public String getPermitResourceName() {
@@ -28,11 +40,11 @@ public class RegisterRequest extends BaseRequest {
         this.permitResourceName = permitResourceName;
     }
 
-    public String getPermitSpec() {
+    public PermitSpec getPermitSpec() {
         return permitSpec;
     }
 
-    public void setPermitSpec(String permitSpec) {
+    public void setPermitSpec(PermitSpec permitSpec) {
         this.permitSpec = permitSpec;
     }
 
@@ -54,6 +66,7 @@ public class RegisterRequest extends BaseRequest {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("permitId", permitId)
                 .add("permitResourceName", permitResourceName)
                 .add("permitSpec", permitSpec)
                 .toString();

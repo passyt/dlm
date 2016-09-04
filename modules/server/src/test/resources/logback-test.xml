@@ -6,6 +6,9 @@
 		</encoder>
 	</appender>
 
+	<logger name="io.netty.handler.logging.LoggingHandler" level="INFO"/>
+	<logger name="com.derbysoft.nuke.dlm" level="DEBUG"/>
+
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
 	</root>

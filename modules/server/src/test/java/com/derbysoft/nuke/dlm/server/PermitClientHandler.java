@@ -4,15 +4,22 @@ import com.derbysoft.nuke.dlm.model.Protobuf;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.ReferenceCountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by passyt on 16-9-2.
  */
 public class PermitClientHandler extends ChannelHandlerAdapter {
 
+    private static final Logger log = LoggerFactory.getLogger(PermitClientHandler.class);
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("Receive server response:["+msg+"]");
+        super.channelRead(ctx, msg);
+        log.info("Receive response <<| {}", msg);
+        ReferenceCountUtil.release(msg);
     }
 
     @Override
@@ -22,8 +29,7 @@ public class PermitClientHandler extends ChannelHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        // Close the connection when an exception is raised.
-        cause.printStackTrace();
+        log.error("Catch excpetion", cause);
         ctx.close();
     }
 

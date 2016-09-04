@@ -22,6 +22,11 @@ public class TryAcquireResponse extends BaseResponse {
         super(permitId, errorMessage);
     }
 
+    public TryAcquireResponse(String permitId, String errorMessage, boolean successful) {
+        super(permitId, errorMessage);
+        this.successful = successful;
+    }
+
     public boolean isSuccessful() {
         return successful;
     }
@@ -47,6 +52,8 @@ public class TryAcquireResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("permitId", permitId)
+                .add("errorMessage", errorMessage)
                 .add("successful", successful)
                 .toString();
     }

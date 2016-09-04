@@ -18,6 +18,11 @@ public class RegisterResponse extends BaseResponse {
         this.successful = successful;
     }
 
+    public RegisterResponse(String permitId, String errorMessage, boolean successful) {
+        super(permitId, errorMessage);
+        this.successful = successful;
+    }
+
     public RegisterResponse(String permitId, String errorMessage) {
         super(permitId, errorMessage);
     }
@@ -47,6 +52,8 @@ public class RegisterResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("permitId", permitId)
+                .add("errorMessage", errorMessage)
                 .add("successful", successful)
                 .toString();
     }

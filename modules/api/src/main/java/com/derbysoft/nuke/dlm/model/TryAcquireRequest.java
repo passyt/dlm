@@ -1,5 +1,8 @@
 package com.derbysoft.nuke.dlm.model;
 
+import com.derbysoft.nuke.dlm.IPermit;
+import com.derbysoft.nuke.dlm.IPermitManager;
+import com.derbysoft.nuke.dlm.exception.PermitNotFoundException;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -8,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by passyt on 16-9-3.
  */
-public class TryAcquireRequest extends BaseRequest {
+public class TryAcquireRequest extends BaseRequest<TryAcquireResponse> {
 
     private Long timeout;
     private TimeUnit timeUnit;
@@ -25,6 +28,25 @@ public class TryAcquireRequest extends BaseRequest {
         super(permitId);
         this.timeout = timeout;
         this.timeUnit = timeUnit;
+    }
+
+    @Override
+    protected TryAcquireResponse newReponse() {
+        return new TryAcquireResponse();
+    }
+
+    @Override
+    protected void doExecuteBy(IPermitManager manager, TryAcquireResponse tryAcquireResponse) {
+        IPermit permit = manager.getPermit(getPermitId());
+        if (permit == null) {
+            throw new PermitNotFoundException(getPermitId());
+        }
+
+        if (getTimeout() == null || getTimeout() == null) {
+            tryAcquireResponse.setSuccessful(permit.tryAcquire());
+        } else {
+            tryAcquireResponse.setSuccessful(permit.tryAcquire(getTimeout(), getTimeUnit()));
+        }
     }
 
     public Long getTimeout() {
@@ -61,6 +83,7 @@ public class TryAcquireRequest extends BaseRequest {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("permitId", permitId)
                 .add("timeout", timeout)
                 .add("timeUnit", timeUnit)
                 .toString();
