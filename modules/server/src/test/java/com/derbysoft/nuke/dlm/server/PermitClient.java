@@ -1,5 +1,6 @@
 package com.derbysoft.nuke.dlm.server;
 
+import com.derbysoft.nuke.dlm.model.AcquireRequest;
 import com.derbysoft.nuke.dlm.model.IPermitRequest;
 import com.derbysoft.nuke.dlm.model.IPermitResponse;
 import com.derbysoft.nuke.dlm.model.RegisterRequest;
@@ -16,6 +17,8 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +74,9 @@ public class PermitClient {
         channel = bootstrap.connect(host, port).sync().channel();
     }
 
-    public <RS extends IPermitResponse> RS sendMessage(IPermitRequest<RS> request) throws InterruptedException {
+    public <RS extends IPermitResponse> RS sendMessage(IPermitRequest<RS> request) throws Exception {
         log.info("Send request >>| {}", request);
-        channel.writeAndFlush(request).sync();
+        channel.writeAndFlush(request);
         return null;
     }
 
@@ -85,9 +88,10 @@ public class PermitClient {
         PermitClient client = new PermitClient("127.0.0.1", 8081);
         List<Callable<Void>> tasks = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
-            int finalI = i;
+            String permitId = new Random().nextInt(10000)+"0";
             tasks.add(() -> {
-                client.sendMessage(new RegisterRequest(new Random().nextInt(100) + "-" + finalI, "SemaphorePermit", "total=100"));
+                client.sendMessage(new RegisterRequest(permitId, "SemaphorePermit", "total=5"));
+//                client.sendMessage(new AcquireRequest(permitId));
                 return null;
             });
         }
@@ -97,6 +101,7 @@ public class PermitClient {
             long start = System.currentTimeMillis();
             pool.invokeAll(tasks);
             System.out.println("Cost " + (System.currentTimeMillis() - start) + " ms");
+//            TimeUnit.SECONDS.sleep(4L);
             pool.shutdown();
         } finally {
             client.shutdown();

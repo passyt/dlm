@@ -5,29 +5,30 @@ import com.derbysoft.nuke.dlm.IPermitManager;
 import com.derbysoft.nuke.dlm.exception.PermitNotFoundException;
 
 /**
- * Created by passyt on 16-9-3.
+ * Created by passyt on 16-9-5.
  */
-public class AcquireRequest extends BaseRequest<AcquireResponse> {
+public class ReleaseRequest extends BaseRequest<ReleaseResponse> {
 
-    public AcquireRequest() {
+    public ReleaseRequest() {
     }
 
-    public AcquireRequest(String permitId) {
+    public ReleaseRequest(String permitId) {
         super(permitId);
     }
 
     @Override
-    public AcquireResponse newResponse() {
-        return new AcquireResponse();
+    public ReleaseResponse newResponse() {
+        return new ReleaseResponse();
     }
 
     @Override
-    protected void doExecuteBy(IPermitManager manager, AcquireResponse acquireResponse) {
+    protected void doExecuteBy(IPermitManager manager, ReleaseResponse releaseResponse) {
         IPermit permit = manager.getPermit(getPermitId());
         if (permit == null) {
             throw new PermitNotFoundException(getPermitId());
         }
 
-        permit.acquire();
+        permit.release();
     }
+
 }

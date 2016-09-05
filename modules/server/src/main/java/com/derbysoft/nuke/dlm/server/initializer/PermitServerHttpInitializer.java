@@ -1,6 +1,8 @@
 package com.derbysoft.nuke.dlm.server.initializer;
 
-import com.derbysoft.nuke.dlm.server.codec.Uri2PermitRequestDecoder;
+import com.derbysoft.nuke.dlm.server.PermitManager;
+import com.derbysoft.nuke.dlm.server.codec.Http2PermitRequestDecoder;
+import com.derbysoft.nuke.dlm.server.codec.PermitResponse2HttpEncoder;
 import com.derbysoft.nuke.dlm.server.handler.PermitServerHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -8,7 +10,6 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Component;
  */
 @Component("permitServerHttpInitializer")
 public class PermitServerHttpInitializer extends PermitServerInitializer {
+
+    @Autowired
+    private PermitManager manager;
 
     @Autowired
     public PermitServerHttpInitializer(PermitServerHandler handler) {
@@ -31,13 +35,13 @@ public class PermitServerHttpInitializer extends PermitServerInitializer {
     @Override
     protected void beforeInitChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
-                .addLast("logger", new LoggingHandler(LogLevel.DEBUG))
+                .addLast("logger", new LoggingHandler(LogLevel.TRACE))
                 .addLast("http-decoder", new HttpRequestDecoder())
-                .addLast("http-aggregator", new HttpObjectAggregator(65536))
-                .addLast("json-decoder", new Uri2PermitRequestDecoder())
                 .addLast("http-encoder", new HttpResponseEncoder())
-                //TODO
-                .addLast("http-chunked", new ChunkedWriteHandler());
+                .addLast("http-aggregator", new HttpObjectAggregator(65536))
+                .addLast("request-decoder", new Http2PermitRequestDecoder(manager))
+                .addLast("response-encoder", new PermitResponse2HttpEncoder());
+//                .addLast("http-chunked", new ChunkedWriteHandler());
     }
 
     @Override

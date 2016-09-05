@@ -14,7 +14,7 @@ public class ExistingRequest extends BaseRequest<ExistingResponse> {
     }
 
     @Override
-    protected ExistingResponse newReponse() {
+    public ExistingResponse newResponse() {
         return new ExistingResponse();
     }
 

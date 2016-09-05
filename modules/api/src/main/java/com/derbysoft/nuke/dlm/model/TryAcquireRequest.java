@@ -31,7 +31,7 @@ public class TryAcquireRequest extends BaseRequest<TryAcquireResponse> {
     }
 
     @Override
-    protected TryAcquireResponse newReponse() {
+    public TryAcquireResponse newResponse() {
         return new TryAcquireResponse();
     }
 

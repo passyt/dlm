@@ -17,9 +17,7 @@ public class PermitClientHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        super.channelRead(ctx, msg);
         log.info("Receive response <<| {}", msg);
-        ReferenceCountUtil.release(msg);
     }
 
     @Override

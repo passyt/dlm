@@ -23,7 +23,7 @@ public class RegisterRequest extends BaseRequest<RegisterResponse> {
     }
 
     @Override
-    protected RegisterResponse newReponse() {
+    public RegisterResponse newResponse() {
         return new RegisterResponse();
     }
 

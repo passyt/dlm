@@ -29,6 +29,8 @@ public class ProtoBuf2PermitResponseDecoder extends MessageToMessageDecoder<Prot
             case TRY_ACQUIRE_RESPONSE:
                 out.add(new TryAcquireResponse(response.getTryAcquireResponse().getPermitId(), response.getTryAcquireResponse().getErrorMessage(), response.getTryAcquireResponse().getSuccessful()));
                 break;
+            case RELEASE_RESPONSE:
+                out.add(new ReleaseResponse(response.getReleaseResponse().getPermitId(), response.getReleaseResponse().getErrorMessage()));
             default:
                 throw new IllegalArgumentException("Unknown message type by " + response.getType());
         }

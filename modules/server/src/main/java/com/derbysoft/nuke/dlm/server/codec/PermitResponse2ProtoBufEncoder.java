@@ -77,6 +77,17 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     )
                     .build()
             );
+        } else if (response instanceof ReleaseResponse) {
+            ReleaseResponse actualResponse = (ReleaseResponse) response;
+            out.add(Protobuf.Response.newBuilder()
+                    .setType(RELEASE_RESPONSE)
+                    .setReleaseResponse(
+                            Protobuf.ReleaseResponse.newBuilder()
+                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
+                    )
+                    .build()
+            );
         } else {
             throw new IllegalArgumentException("Unknown message type by " + response.getClass());
         }

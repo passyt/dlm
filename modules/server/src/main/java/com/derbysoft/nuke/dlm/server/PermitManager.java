@@ -8,10 +8,13 @@ import com.derbysoft.nuke.dlm.standalone.LeakyBucketPermit;
 import com.derbysoft.nuke.dlm.standalone.ReentrantPermit;
 import com.derbysoft.nuke.dlm.standalone.SemaphorePermit;
 import com.derbysoft.nuke.dlm.standalone.TokenBucketPermit;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -68,6 +71,10 @@ public class PermitManager implements IPermitManager {
     @Override
     public IPermit getPermit(String permitId) {
         return permits.get(permitId);
+    }
+
+    public Map<String, IPermit> permits(){
+        return ImmutableMap.copyOf(this.permits);
     }
 
     protected IPermit buildPermit(String resourceName, PermitSpec spec) {

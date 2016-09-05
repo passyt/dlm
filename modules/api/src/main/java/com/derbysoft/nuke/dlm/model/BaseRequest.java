@@ -15,13 +15,11 @@ public abstract class BaseRequest<RS extends BaseResponse> implements IPermitReq
     public BaseRequest() {
     }
 
-    protected abstract RS newReponse();
-
     protected abstract void doExecuteBy(IPermitManager manager, RS rs);
 
     @Override
     public RS executeBy(IPermitManager manager) {
-        RS rs = newReponse();
+        RS rs = newResponse();
         rs.setPermitId(permitId);
         try {
             doExecuteBy(manager, rs);

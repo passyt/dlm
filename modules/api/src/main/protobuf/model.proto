@@ -65,6 +65,15 @@ message TryAcquireResponse {
     bool successful = 3;
 }
 
+message ReleaseRequest{
+    string permitId = 1;
+}
+
+message ReleaseResponse {
+    string permitId = 1;
+    string errorMessage = 2;
+}
+
 message Request {
     enum RequestType {
         REGISTER_REQUEST = 0;
@@ -72,6 +81,7 @@ message Request {
         EXISTING_REQUEST = 2;
         ACQUIRE_REQUEST = 3;
         TRY_ACQUIRE_REQUEST = 4;
+        RELEASE_REQUEST = 5;
     }
 
     RequestType type = 1;
@@ -80,6 +90,7 @@ message Request {
     ExistingRequest existingRequest = 4;
     AcquireRequest acquireRequest = 5;
     TryAcquireRequest tryAcquireRequest = 6;
+    ReleaseRequest releaseRequest = 7;
 }
 
 message Response {
@@ -89,6 +100,7 @@ message Response {
         EXISTING_RESPONSE = 2;
         ACQUIRE_RESPONSE = 3;
         TRY_ACQUIRE_RESPONSE = 4;
+        RELEASE_RESPONSE = 5;
     }
 
     ResponseType type = 1;
@@ -97,5 +109,6 @@ message Response {
     ExistingResponse existingResponse = 4;
     AcquireResponse acquireResponse = 5;
     TryAcquireResponse tryAcquireResponse = 6;
+    ReleaseResponse releaseResponse = 7;
 
 }

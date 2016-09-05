@@ -14,7 +14,7 @@ public class UnRegisterRequest extends BaseRequest<UnRegisterResponse> {
     }
 
     @Override
-    protected UnRegisterResponse newReponse() {
+    public UnRegisterResponse newResponse() {
         return new UnRegisterResponse();
     }
 

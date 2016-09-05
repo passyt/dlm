@@ -33,6 +33,9 @@ public class ProtoBuf2PermitRequestDecoder extends MessageToMessageDecoder<Proto
                     out.add(new TryAcquireRequest(request.getTryAcquireRequest().getPermitId(), request.getTryAcquireRequest().getTimeout(), TimeUnit.valueOf(request.getTryAcquireRequest().getTimeUnit().name())));
                 }
                 break;
+            case RELEASE_REQUEST:
+                out.add(new ReleaseRequest(request.getReleaseRequest().getPermitId()));
+                break;
             default:
                 throw new IllegalArgumentException("Unknown message type by " + request.getType());
         }

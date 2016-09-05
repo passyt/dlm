@@ -67,6 +67,15 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                                     )
                     )
                     .build());
+        } else if (request instanceof ReleaseRequest) {
+            ReleaseRequest releaseRequest = (ReleaseRequest) request;
+            out.add(Protobuf.Request.newBuilder()
+                    .setType(RELEASE_REQUEST)
+                    .setReleaseRequest(
+                            Protobuf.ReleaseRequest.newBuilder()
+                                    .setPermitId(releaseRequest.getPermitId())
+                    )
+                    .build());
         } else {
             throw new IllegalArgumentException("Unknown message type by " + request.getClass());
         }
