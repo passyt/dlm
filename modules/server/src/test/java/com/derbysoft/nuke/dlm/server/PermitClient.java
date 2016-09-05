@@ -1,9 +1,6 @@
 package com.derbysoft.nuke.dlm.server;
 
-import com.derbysoft.nuke.dlm.model.AcquireRequest;
-import com.derbysoft.nuke.dlm.model.IPermitRequest;
-import com.derbysoft.nuke.dlm.model.IPermitResponse;
-import com.derbysoft.nuke.dlm.model.RegisterRequest;
+import com.derbysoft.nuke.dlm.model.*;
 import com.derbysoft.nuke.dlm.server.codec.PermitRequest2ProtoBufEncoder;
 import com.derbysoft.nuke.dlm.server.codec.ProtoBuf2PermitResponseDecoder;
 import io.netty.bootstrap.Bootstrap;
@@ -87,10 +84,10 @@ public class PermitClient {
     public static void main(String[] args) throws Exception {
         PermitClient client = new PermitClient("127.0.0.1", 8081);
         List<Callable<Void>> tasks = new ArrayList<>();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1; i++) {
             String permitId = new Random().nextInt(10000)+"0";
             tasks.add(() -> {
-                client.sendMessage(new RegisterRequest(permitId, "SemaphorePermit", "total=5"));
+                client.sendMessage(new TryAcquireRequest("123"));
 //                client.sendMessage(new AcquireRequest(permitId));
                 return null;
             });
@@ -101,7 +98,7 @@ public class PermitClient {
             long start = System.currentTimeMillis();
             pool.invokeAll(tasks);
             System.out.println("Cost " + (System.currentTimeMillis() - start) + " ms");
-//            TimeUnit.SECONDS.sleep(4L);
+            TimeUnit.SECONDS.sleep(4L);
             pool.shutdown();
         } finally {
             client.shutdown();

@@ -4,10 +4,7 @@ import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.IPermitManager;
 import com.derbysoft.nuke.dlm.PermitBuilderManager;
 import com.derbysoft.nuke.dlm.PermitSpec;
-import com.derbysoft.nuke.dlm.standalone.LeakyBucketPermit;
-import com.derbysoft.nuke.dlm.standalone.ReentrantPermit;
-import com.derbysoft.nuke.dlm.standalone.SemaphorePermit;
-import com.derbysoft.nuke.dlm.standalone.TokenBucketPermit;
+import com.derbysoft.nuke.dlm.standalone.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -28,29 +25,15 @@ public class PermitManager implements IPermitManager {
     private ConcurrentMap<String, IPermit> permits = new ConcurrentHashMap<>();
 
     static {
-        PermitBuilderManager.getInstance().registerPermitBuilder((spec) -> {
-            return new LeakyBucketPermit(spec.required(true).doubleValueOf("permitsPerSecond"));
-        }, LeakyBucketPermit.class.getSimpleName(), LeakyBucketPermit.class.getName());
-
-//        PermitBuilderManager.getInstance().registerPermitBuilder((spec) -> {
-//            return new ReentrantPermit();
-//        }, ReentrantPermit.class.getSimpleName(), ReentrantPermit.class.getName());
-
-        PermitBuilderManager.getInstance().registerPermitBuilder((spec) -> {
-            return new SemaphorePermit(spec.required(true).intValueOf("total"));
-        }, SemaphorePermit.class.getSimpleName(), SemaphorePermit.class.getName());
-
-        PermitBuilderManager.getInstance().registerPermitBuilder((spec) -> {
-            return new TokenBucketPermit(spec.required(true).doubleValueOf("permitsPerSecond"));
-        }, TokenBucketPermit.class.getSimpleName(), TokenBucketPermit.class.getName());
+        StandalonePermit.init();
     }
 
     @Override
-    public boolean register(String permitId, String resourceName, PermitSpec spec) {
-        log.debug("Register permit {} with spec {} by id {}", resourceName, spec, permitId);
+    public boolean register(String resourceId, String permitName, PermitSpec spec) {
+        log.debug("Register permit {} with spec {} by id {}", permitName, spec, resourceId);
 
-        if (permits.putIfAbsent(permitId, buildPermit(resourceName, spec)) != null) {
-            log.warn("An existing permit {} with id {}, not allow to register", permits.get(permitId), permitId);
+        if (permits.putIfAbsent(resourceId, buildPermit(permitName, spec)) != null) {
+            log.warn("An existing permit {} with id {}, not allow to register", permits.get(resourceId), resourceId);
             return false;
         }
 
@@ -58,29 +41,29 @@ public class PermitManager implements IPermitManager {
     }
 
     @Override
-    public boolean unregister(String permitId) {
-        permits.remove(permitId);
+    public boolean unregister(String resourceId) {
+        permits.remove(resourceId);
         return true;
     }
 
     @Override
-    public boolean isExisting(String permitId) {
-        return permits.containsKey(permitId);
+    public boolean isExisting(String resourceId) {
+        return permits.containsKey(resourceId);
     }
 
     @Override
-    public IPermit getPermit(String permitId) {
-        return permits.get(permitId);
+    public IPermit getPermit(String resourceId) {
+        return permits.get(resourceId);
     }
 
-    public Map<String, IPermit> permits(){
+    public Map<String, IPermit> permits() {
         return ImmutableMap.copyOf(this.permits);
     }
 
-    protected IPermit buildPermit(String resourceName, PermitSpec spec) {
-        IPermit permit = PermitBuilderManager.getInstance().buildPermit(resourceName, spec);
+    protected IPermit buildPermit(String permitName, PermitSpec spec) {
+        IPermit permit = PermitBuilderManager.getInstance().buildPermit(permitName, spec);
         if (permit == null) {
-            throw new IllegalArgumentException("Permit not found by resource " + resourceName + " with spec " + spec);
+            throw new IllegalArgumentException("Permit not found by permit " + permitName + " with spec " + spec);
         }
 
         return permit;

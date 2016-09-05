@@ -68,7 +68,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
         } else if (response instanceof TryAcquireResponse) {
             TryAcquireResponse actualResponse = (TryAcquireResponse) response;
             out.add(Protobuf.Response.newBuilder()
-                    .setType(ACQUIRE_RESPONSE)
+                    .setType(TRY_ACQUIRE_RESPONSE)
                     .setTryAcquireResponse(
                             Protobuf.TryAcquireResponse.newBuilder()
                                     .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))

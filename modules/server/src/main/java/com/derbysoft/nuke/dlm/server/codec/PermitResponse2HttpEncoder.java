@@ -10,6 +10,8 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -25,4 +27,15 @@ public class PermitResponse2HttpEncoder extends MessageToMessageEncoder<IPermitR
         ctx.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+        StringWriter writer = new StringWriter();
+        cause.printStackTrace(new PrintWriter(writer));
+
+        DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, Unpooled.copiedBuffer(writer.toString().getBytes("UTF-8")));
+        httpResponse.headers().add("Content-Type", "application/json; charset=utf-8");
+        httpResponse.headers().add("Server", "Netty-5.0");
+        ctx.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
+    }
 }

@@ -21,13 +21,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <ul>
- * <li>/register/${permitId}/resourcename/${resourcename}/spec/${spec}</li>
- * <li>/unregister/${permitId}</li>
- * <li>/existing/${permitId}</li>
- * <li>/permit/${permitId}/action/acquire</li>
- * <li>/permit/${permitId}/action/tryacquire</li>
- * <li>/permit/${permitId}/action/tryacquire/timeout/10/timeunit/seconds</li>
- * <li>/permit/${permitId}/action/release</li>
+ * <li>/register/${resourceId}/permitname/${permitname}/spec/${spec}</li>
+ * <li>/unregister/${resourceId}</li>
+ * <li>/existing/${resourceId}</li>
+ * <li>/permit/${resourceId}/action/acquire</li>
+ * <li>/permit/${resourceId}/action/tryacquire</li>
+ * <li>/permit/${resourceId}/action/tryacquire/timeout/10/timeunit/seconds</li>
+ * <li>/permit/${resourceId}/action/release</li>
  * </ul>
  * Created by passyt on 16-9-4.
  */
@@ -35,13 +35,13 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
 
     private final Logger log = LoggerFactory.getLogger(Http2PermitRequestDecoder.class);
     private static final String HELP_MESSAGE = "Usage:\n<ul>\n" +
-            " <li>/register/${permitId}/resourcename/${resourcename}/spec/${spec}</li>\n" +
-            " <li>/unregister/${permitId}</li>\n" +
-            " <li>/existing/${permitId}</li>\n" +
-            " <li>/permit/${permitId}/action/acquire</li>\n" +
-            " <li>/permit/${permitId}/action/tryacquire</li>\n" +
-            " <li>/permit/${permitId}/action/tryacquire/timeout/10/timeunit/seconds</li>\n" +
-            " <li>/permit/${permitId}/action/release</li>\n" +
+            " <li>/register/${resourceId}/permitname/${permitname}/spec/${spec}</li>\n" +
+            " <li>/unregister/${resourceId}</li>\n" +
+            " <li>/existing/${resourceId}</li>\n" +
+            " <li>/permit/${resourceId}/action/acquire</li>\n" +
+            " <li>/permit/${resourceId}/action/tryacquire</li>\n" +
+            " <li>/permit/${resourceId}/action/tryacquire/timeout/10/timeunit/seconds</li>\n" +
+            " <li>/permit/${resourceId}/action/release</li>\n" +
             " </ul>\n";
 
     public static final String METHOD_REGISTER = "register";
@@ -54,7 +54,7 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
     public static final String ACTION_RELEASE = "release";
 
     public static final String PARAMETER_ACTION = "action";
-    public static final String PARAMETER_RESOURCENAME = "resourcename";
+    public static final String PARAMETER_PERMITNAME = "permitname";
     public static final String PARAMETER_SPEC = "spec";
     public static final String PARAMETER_TIMEOUT = "timeout";
     public static final String PARAMETER_TIMEUNIT = "timeunit";
@@ -81,32 +81,32 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
 
         Map<String, String> parameters = toParameters(uri.substring(1));
         if (parameters.containsKey(METHOD_REGISTER)) {
-            String permitId = parameters.get(METHOD_REGISTER);
-            out.add(new RegisterRequest(permitId, required(parameters, PARAMETER_RESOURCENAME), parameters.get(PARAMETER_SPEC)));
+            String resourceId = parameters.get(METHOD_REGISTER);
+            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), parameters.get(PARAMETER_SPEC)));
             return;
         } else if (parameters.containsKey(METHOD_UNREGISTER)) {
-            String permitId = parameters.get(METHOD_UNREGISTER);
-            out.add(new UnRegisterRequest(permitId));
+            String resourceId = parameters.get(METHOD_UNREGISTER);
+            out.add(new UnRegisterRequest(resourceId));
             return;
         } else if (parameters.containsKey(METHOD_EXISTING)) {
-            String permitId = parameters.get(METHOD_EXISTING);
-            out.add(new ExistingRequest(permitId));
+            String resourceId = parameters.get(METHOD_EXISTING);
+            out.add(new ExistingRequest(resourceId));
             return;
         } else if (parameters.containsKey(METHOD_PERMIT)) {
-            String permitId = parameters.get(METHOD_PERMIT);
+            String resourceId = parameters.get(METHOD_PERMIT);
             String action = parameters.get(PARAMETER_ACTION);
             if (ACTION_ACQUIRE.equals(action)) {
-                out.add(new AcquireRequest(permitId));
+                out.add(new AcquireRequest(resourceId));
                 return;
             } else if (ACTION_TRYACQUIRE.equals(action)) {
                 if (parameters.containsKey(PARAMETER_TIMEOUT) && parameters.containsKey(PARAMETER_TIMEUNIT)) {
-                    out.add(new TryAcquireRequest(permitId, Long.parseLong(required(parameters, PARAMETER_TIMEOUT)), TimeUnit.valueOf(required(parameters, PARAMETER_TIMEUNIT).toUpperCase())));
+                    out.add(new TryAcquireRequest(resourceId, Long.parseLong(required(parameters, PARAMETER_TIMEOUT)), TimeUnit.valueOf(required(parameters, PARAMETER_TIMEUNIT).toUpperCase())));
                 } else {
-                    out.add(new TryAcquireRequest(permitId));
+                    out.add(new TryAcquireRequest(resourceId));
                 }
                 return;
             } else if (ACTION_RELEASE.equals(action)) {
-                out.add(new ReleaseRequest(permitId));
+                out.add(new ReleaseRequest(resourceId));
                 return;
             }
         }

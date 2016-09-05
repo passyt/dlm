@@ -3,6 +3,8 @@ package com.derbysoft.nuke.dlm.standalone;
 import com.google.common.base.MoreObjects;
 import com.google.common.util.concurrent.RateLimiter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -65,5 +67,9 @@ public class LeakyBucketPermit extends StandalonePermit {
         return MoreObjects.toStringHelper(this)
                 .add("stableRate", String.format(Locale.ROOT, "%3.1fqps", rateLimiter.getRate()))
                 .toString() + "@" + Integer.toHexString(hashCode());
+    }
+
+    public static void main(String... a) throws UnsupportedEncodingException {
+        System.out.print(URLEncoder.encode("=","UTF-8"));
     }
 }
