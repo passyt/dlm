@@ -73,7 +73,7 @@ public class PermitClient {
 
     public <RS extends IPermitResponse> RS sendMessage(IPermitRequest<RS> request) throws Exception {
         log.info("Send request >>| {}", request);
-        channel.writeAndFlush(request);
+        channel.writeAndFlush(request).sync();
         return null;
     }
 
@@ -84,7 +84,7 @@ public class PermitClient {
     public static void main(String[] args) throws Exception {
         PermitClient client = new PermitClient("127.0.0.1", 8081);
         List<Callable<Void>> tasks = new ArrayList<>();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10000; i++) {
             String permitId = new Random().nextInt(10000)+"0";
             tasks.add(() -> {
                 client.sendMessage(new TryAcquireRequest("123"));
@@ -97,8 +97,9 @@ public class PermitClient {
         try {
             long start = System.currentTimeMillis();
             pool.invokeAll(tasks);
-            System.out.println("Cost " + (System.currentTimeMillis() - start) + " ms");
+            long end = System.currentTimeMillis();
             TimeUnit.SECONDS.sleep(4L);
+            System.out.println("Cost " + (end - start) + " ms");
             pool.shutdown();
         } finally {
             client.shutdown();

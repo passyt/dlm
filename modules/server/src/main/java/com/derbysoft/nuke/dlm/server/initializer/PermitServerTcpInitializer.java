@@ -32,7 +32,7 @@ public class PermitServerTcpInitializer extends PermitServerInitializer {
     @Override
     protected void beforeInitChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
-                .addLast("logger", new LoggingHandler(LogLevel.INFO))
+                .addLast("logger", new LoggingHandler(LogLevel.DEBUG))
                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
                 .addLast("protobufDecoder", new ProtobufDecoder(com.derbysoft.nuke.dlm.model.Protobuf.Request.getDefaultInstance()))
                 .addLast("permitDecoder", new ProtoBuf2PermitRequestDecoder())

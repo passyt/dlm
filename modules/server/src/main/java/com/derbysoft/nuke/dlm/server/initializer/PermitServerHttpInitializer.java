@@ -35,7 +35,7 @@ public class PermitServerHttpInitializer extends PermitServerInitializer {
     @Override
     protected void beforeInitChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
-                .addLast("logger", new LoggingHandler(LogLevel.TRACE))
+                .addLast("logger", new LoggingHandler(LogLevel.DEBUG))
                 .addLast("http-decoder", new HttpRequestDecoder())
                 .addLast("http-encoder", new HttpResponseEncoder())
                 .addLast("http-aggregator", new HttpObjectAggregator(65536))
