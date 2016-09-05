@@ -2,8 +2,10 @@ package com.derbysoft.nuke.dlm.standalone;
 
 import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.PermitSpec;
+import com.google.common.base.MoreObjects;
 import com.google.common.util.concurrent.RateLimiter;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,4 +62,10 @@ public class TokenBucketPermit extends StandalonePermit {
     public void release() {
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("stableRate", String.format(Locale.ROOT, "%3.1fqps", rateLimiter.getRate()))
+                .toString();
+    }
 }

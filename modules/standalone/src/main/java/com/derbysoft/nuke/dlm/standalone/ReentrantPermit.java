@@ -2,6 +2,7 @@ package com.derbysoft.nuke.dlm.standalone;
 
 import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.PermitSpec;
+import com.google.common.base.MoreObjects;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -42,4 +43,9 @@ public class ReentrantPermit extends StandalonePermit {
         lock.unlock();
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .toString();
+    }
 }

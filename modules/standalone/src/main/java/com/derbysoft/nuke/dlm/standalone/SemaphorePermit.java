@@ -63,6 +63,6 @@ public class SemaphorePermit extends StandalonePermit {
                 .add("availablePermits", semaphore.availablePermits())
                 .add("drainPermits", semaphore.drainPermits())
                 .add("total", total)
-                .toString() + "@" + hashCode();
+                .toString() + "@" + Integer.toHexString(hashCode());
     }
 }
