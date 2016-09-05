@@ -6,33 +6,8 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.derby.nuke.common.adapter.ari.retrieve.executor.script.ScriptBuilder" level="INFO">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="com.derby.nuke.common.module.script.ScriptExecuteHelper" level="INFO">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="com.derby.nuke.common.adapter.model.fee.ExpressionCalculate" level="ERROR">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="com.derby.nuke.common.adapter.ari.retrieve.executor.support.AgentJobBuilder" level="ERROR">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="com.derby.nuke.common.module.script.ScriptLoader" level="ERROR">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="com.derby.nuke.common.adapter.model.fee.RateExpression" level="ERROR">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="com.derby.nuke.channel.plugin.mock.MockServlet" level="ERROR">
-		<appender-ref ref="STDOUT" />
-	</logger>
+	<logger name="io.netty.handler.logging.LoggingHandler" level="INFO"/>
+	<logger name="com.derbysoft.nuke.dlm" level="DEBUG"/>
 
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
