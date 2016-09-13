@@ -1,8 +1,8 @@
 package com.derbysoft.nuke.dlm.client.http.impl;
 
-import com.derby.nuke.common.adapter.exception.BusinessException;
 import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.client.utils.DataUtil;
+import com.derbysoft.nuke.dlm.exception.PermitException;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +38,7 @@ public class PermitImpl extends HttpPermitClient implements IPermit {
     public boolean tryAcquire() {
         Map<String, String> response = DataUtil.transformerResponse(client.get(serverUrl + "/permit/" + resourceId + "/action/tryacquire"));
         if (response.get("errorMessage") != null) {
-            throw new BusinessException(response.get("permitId"), (String) response.get("errorMessage"));
+            throw new PermitException((String) response.get("errorMessage"));
         }
         return Boolean.valueOf(String.valueOf(response.get("successful")));
     }
@@ -47,7 +47,7 @@ public class PermitImpl extends HttpPermitClient implements IPermit {
     public boolean tryAcquire(long timeout, TimeUnit unit) {
         Map<String, String> response = DataUtil.transformerResponse(client.get(serverUrl + "/permit/" + resourceId + "/action/tryacquire/timeout/" + timeout + "/timeunit/" + unit));
         if (response.get("errorMessage") != null) {
-            throw new BusinessException(response.get("permitId"), (String) response.get("errorMessage"));
+            throw new PermitException((String) response.get("errorMessage"));
         }
         return Boolean.valueOf(String.valueOf(response.get("successful")));
     }
@@ -56,7 +56,7 @@ public class PermitImpl extends HttpPermitClient implements IPermit {
     public void release() {
         Map<String, String> response = DataUtil.transformerResponse(client.get(serverUrl + "/permit/" + resourceId + "/action/release"));
         if (response.get("errorMessage") != null) {
-            throw new BusinessException(response.get("permitId"), (String) response.get("errorMessage"));
+            throw new PermitException((String) response.get("errorMessage"));
         }
     }
 
