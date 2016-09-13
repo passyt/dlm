@@ -1,4 +1,4 @@
-package com.derbysoft.nuke.dlm.client.http.impl;
+package com.derbysoft.nuke.dlm.client.http;
 
 import com.derbysoft.nuke.dlm.PermitSpec;
 import org.junit.Before;
@@ -9,7 +9,7 @@ import org.junit.Test;
  */
 public class PermitManagerTest {
 
-    private PermitManagerImpl permitManager;
+    private HttpPermitManager permitManager;
     private static final String resourceId = "M21AK47";
     private static final String leakyBucketPermit = "LeakyBucketPermit";
     private static final String reentrantPermit = "ReentrantPermit";
@@ -19,7 +19,7 @@ public class PermitManagerTest {
 
     @Before
     public void init() {
-        permitManager = new PermitManagerImpl();
+        permitManager = new HttpPermitManager();
         permitManager.setServerUrl("http://127.0.0.1:8080");
     }
 

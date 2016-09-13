@@ -1,4 +1,4 @@
-package com.derbysoft.nuke.dlm.client.http.impl;
+package com.derbysoft.nuke.dlm.client.http;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,15 +10,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class PermitImplTest {
 
-    private PermitImpl permitImpl;
-    private static final String resourceId = "M21fAK47";
+    private HttpPermit permitImpl;
+    private static final String resourceId = "M21AK47";
 
     @Before
     public void init() {
-        permitImpl = new PermitImpl(resourceId);
+        permitImpl = new HttpPermit(resourceId);
         permitImpl.setServerUrl("http://127.0.0.1:8080");
-        permitImpl.setTimeOut(100l);
-        permitImpl.setTimeUnit(TimeUnit.MILLISECONDS);
+        permitImpl.setAcquireTimeout(100l);
     }
 
     @Test
