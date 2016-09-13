@@ -6,6 +6,9 @@ import com.derby.nuke.common.ws.client.SimpleClient;
 import com.derby.nuke.common.ws.client.SimpleClientImpl;
 import com.derbysoft.nuke.dlm.exception.PermitException;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.Map;
 
 
@@ -42,6 +45,19 @@ public abstract class AbstractHttpPermitClient {
         }
 
         return response;
+    }
+
+    protected String toUri(String template, Object... args) {
+        String[] strings = new String[args.length];
+        int i = 0;
+        for (Object each : args) {
+            try {
+                strings[i++] = URLEncoder.encode(String.valueOf(each), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return String.format(template, strings);
     }
 
 }

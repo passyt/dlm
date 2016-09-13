@@ -40,17 +40,17 @@ public class HttpPermit extends AbstractHttpPermitClient implements IPermit {
 
     @Override
     public boolean tryAcquire() {
-        return (boolean) execute("/permit/" + resourceId + "/action/tryacquire").get("successful");
+        return (boolean) execute(toUri("/permit/%s/action/tryacquire", resourceId)).get("successful");
     }
 
     @Override
     public boolean tryAcquire(long timeout, TimeUnit unit) {
-        return (boolean) execute("/permit/" + resourceId + "/action/tryacquire/acquireTimeout/" + timeout + "/timeunit/" + unit).get("successful");
+        return (boolean) execute(toUri("/permit/%s/action/tryacquire/acquireTimeout/%s/timeunit/%s", resourceId, timeout, unit)).get("successful");
     }
 
     @Override
     public void release() {
-        execute("/permit/" + resourceId + "/action/release");
+        execute(toUri("/permit/%s/action/release", resourceId));
     }
 
     public void setAcquireTimeout(Long acquireTimeout) {

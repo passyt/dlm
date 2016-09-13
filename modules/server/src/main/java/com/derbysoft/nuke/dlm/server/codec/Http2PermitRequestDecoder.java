@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -81,20 +82,20 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
 
         Map<String, String> parameters = toParameters(uri.substring(1));
         if (parameters.containsKey(METHOD_REGISTER)) {
-            String resourceId = parameters.get(METHOD_REGISTER);
-            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), parameters.get(PARAMETER_SPEC)));
+            String resourceId = optional(parameters, METHOD_REGISTER);
+            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), optional(parameters, PARAMETER_SPEC)));
             return;
         } else if (parameters.containsKey(METHOD_UNREGISTER)) {
-            String resourceId = parameters.get(METHOD_UNREGISTER);
+            String resourceId = optional(parameters, METHOD_UNREGISTER);
             out.add(new UnRegisterRequest(resourceId));
             return;
         } else if (parameters.containsKey(METHOD_EXISTING)) {
-            String resourceId = parameters.get(METHOD_EXISTING);
+            String resourceId = optional(parameters, METHOD_EXISTING);
             out.add(new ExistingRequest(resourceId));
             return;
         } else if (parameters.containsKey(METHOD_PERMIT)) {
-            String resourceId = parameters.get(METHOD_PERMIT);
-            String action = parameters.get(PARAMETER_ACTION);
+            String resourceId = optional(parameters, METHOD_PERMIT);
+            String action = optional(parameters, PARAMETER_ACTION);
             if (ACTION_ACQUIRE.equals(action)) {
                 out.add(new AcquireRequest(resourceId));
                 return;
@@ -150,12 +151,20 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
     }
 
     protected String required(Map<String, String> parameters, String key) {
-        String value = parameters.get(key);
+        String value = optional(parameters, key);
         if (value == null) {
             throw new IllegalArgumentException(key + " is required");
         }
 
         return value;
+    }
+
+    protected String optional(Map<String, String> parameters, String key) {
+        try {
+            return URLDecoder.decode(parameters.get(key), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Invalid key " + key + " by values " + parameters, e);
+        }
     }
 
 }
