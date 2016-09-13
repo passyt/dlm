@@ -11,17 +11,17 @@ public class HttpPermitManager extends AbstractHttpPermitClient implements IPerm
 
     @Override
     public boolean register(String resourceId, String permitName, PermitSpec spec) {
-        return (boolean) execute(toUri("/register/%s/permitname/%s/spec/%s", resourceId, permitName, spec)).get("successful");
+        return (boolean) execute("/register/%s/permitname/%s/spec/%s", resourceId, permitName, spec).get("successful");
     }
 
     @Override
     public boolean unregister(String resourceId) {
-        return (boolean) execute(toUri("/unregister/%s", resourceId)).get("successful");
+        return (boolean) execute("/unregister/%s", resourceId).get("successful");
     }
 
     @Override
     public boolean isExisting(String resourceId) {
-        return (boolean) execute(toUri("/existing/%s", resourceId)).get("existing");
+        return (boolean) execute("/existing/%s", resourceId).get("existing");
     }
 
     @Override

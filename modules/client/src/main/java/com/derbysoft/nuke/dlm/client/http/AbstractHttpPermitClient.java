@@ -31,7 +31,8 @@ public abstract class AbstractHttpPermitClient {
         this.serverUrl = serverUrl;
     }
 
-    protected Map<String, Object> execute(String uri) {
+    protected Map<String, Object> execute(String uriTemplate, Object... args) {
+        String uri = toUri(uriTemplate, args);
         String url = null;
         if (uri.startsWith("/")) {
             url = serverUrl + uri;
