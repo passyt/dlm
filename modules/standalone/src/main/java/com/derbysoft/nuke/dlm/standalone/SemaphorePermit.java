@@ -49,6 +49,10 @@ public class SemaphorePermit extends StandalonePermit {
 
     @Override
     public void release() {
+        if (semaphore.availablePermits() > total - 1) {
+            return;
+        }
+
         semaphore.release();
     }
 
@@ -59,10 +63,8 @@ public class SemaphorePermit extends StandalonePermit {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("fair", semaphore.isFair())
                 .add("availablePermits", semaphore.availablePermits())
-                .add("drainPermits", semaphore.drainPermits())
                 .add("total", total)
-                .toString() + "@" + Integer.toHexString(hashCode());
+                .toString();
     }
 }
