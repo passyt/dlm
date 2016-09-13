@@ -1,14 +1,16 @@
 package com.derbysoft.nuke.dlm.client.http;
 
-import com.alibaba.fastjson.JSON;
 import com.derby.nuke.common.ws.client.RetryExecutor;
 import com.derby.nuke.common.ws.client.SimpleClient;
 import com.derby.nuke.common.ws.client.SimpleClientImpl;
 import com.derbysoft.nuke.dlm.exception.PermitException;
+import net.sourceforge.plastosome.json.JSON;
+import net.sourceforge.plastosome.json.JSONParseException;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.MessageFormat;
 import java.util.Map;
 
 
@@ -40,7 +42,12 @@ public abstract class AbstractHttpPermitClient {
             url = serverUrl + "/" + uri;
         }
         String text = client.get(url);
-        Map<String, Object> response = JSON.parseObject(text, Map.class);
+        Map<String, Object> response = null;
+        try {
+            response = (Map<String, Object>) JSON.deserialize(new StringReader(text));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
         if (response.get("errorMessage") != null) {
             throw new PermitException((String) response.get("errorMessage"));
         }
