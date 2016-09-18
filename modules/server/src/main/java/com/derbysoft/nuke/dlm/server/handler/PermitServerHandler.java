@@ -41,7 +41,7 @@ public class PermitServerHandler extends ChannelHandlerAdapter {
             } catch (Exception e) {
                 log.error("Catch exception", e);
                 response = request.newResponse();
-                response.setPermitId(request.getPermitId());
+                response.setResourceId(request.getResourceId());
                 response.setErrorMessage(e.getMessage());
             }
             log.info("Return response >>| {} to {}", response, ctx.channel().remoteAddress().toString());

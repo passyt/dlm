@@ -10,7 +10,7 @@ import com.google.common.base.Objects;
  */
 public abstract class BaseRequest<RS extends BaseResponse> implements IPermitRequest<RS> {
 
-    protected String permitId;
+    protected String resourceId;
 
     public BaseRequest() {
     }
@@ -20,7 +20,7 @@ public abstract class BaseRequest<RS extends BaseResponse> implements IPermitReq
     @Override
     public RS executeBy(IPermitManager manager) {
         RS rs = newResponse();
-        rs.setPermitId(permitId);
+        rs.setResourceId(resourceId);
         try {
             doExecuteBy(manager, rs);
         } catch (PermitException e) {
@@ -31,16 +31,16 @@ public abstract class BaseRequest<RS extends BaseResponse> implements IPermitReq
         return rs;
     }
 
-    public BaseRequest(String permitId) {
-        this.permitId = permitId;
+    public BaseRequest(String resourceId) {
+        this.resourceId = resourceId;
     }
 
-    public String getPermitId() {
-        return permitId;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setPermitId(String permitId) {
-        this.permitId = permitId;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
     @Override
@@ -48,18 +48,18 @@ public abstract class BaseRequest<RS extends BaseResponse> implements IPermitReq
         if (this == o) return true;
         if (!(o instanceof BaseRequest)) return false;
         BaseRequest that = (BaseRequest) o;
-        return Objects.equal(permitId, that.permitId);
+        return Objects.equal(resourceId, that.resourceId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(permitId);
+        return Objects.hashCode(resourceId);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("resourceId", resourceId)
                 .toString();
     }
 }

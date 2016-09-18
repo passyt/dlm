@@ -9,7 +9,7 @@ import com.derbysoft.nuke.dlm.model.*;
 /**
  * Created by DT219 on 2016-09-14.
  */
-public class TcpPermitManager extends AbstractTcpPermitService implements IPermitManager {
+public class TcpPermitManager extends AbstractTcpPermitClient implements IPermitManager {
 
     public TcpPermitManager(String host, int port) throws InterruptedException {
         super(host, port);
@@ -17,46 +17,21 @@ public class TcpPermitManager extends AbstractTcpPermitService implements IPermi
 
     @Override
     public boolean register(String resourceId, String permitName, PermitSpec spec) {
-
-        try {
-            RegisterResponse response = this.sendMessage(new RegisterRequest(resourceId, permitName, spec.getSpecification()));
-            if (!response.isSuccessful()) {
-                throw new PermitException(response.getErrorMessage());
-            }
-            return response.isSuccessful();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return execute(new RegisterRequest(resourceId, permitName, spec.getSpecification())).isSuccessful();
     }
 
     @Override
     public boolean unregister(String resourceId) {
-        try {
-            UnRegisterResponse response = this.sendMessage(new UnRegisterRequest(resourceId));
-            if (!response.isSuccessful()) {
-                throw new PermitException(response.getErrorMessage());
-            }
-            return response.isSuccessful();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return execute(new UnRegisterRequest(resourceId)).isSuccessful();
     }
 
     @Override
     public boolean isExisting(String resourceId) {
-        try {
-            ExistingResponse response = this.sendMessage(new ExistingRequest(resourceId));
-            if (!response.isExisting()) {
-                throw new PermitException(response.getErrorMessage());
-            }
-            return response.isExisting();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return execute(new ExistingRequest(resourceId)).isExisting();
     }
 
     @Override
     public IPermit getPermit(String resourceId) {
-        return new TcpPermit(resourceId);
+        return new TcpPermit(resourceId, channelFuture, group);
     }
 }

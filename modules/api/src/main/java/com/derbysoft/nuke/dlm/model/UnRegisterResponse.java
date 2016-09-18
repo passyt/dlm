@@ -48,7 +48,7 @@ public class UnRegisterResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .add("successful", successful)
                 .toString();

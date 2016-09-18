@@ -8,27 +8,27 @@ import com.google.common.base.Objects;
  */
 public class BaseResponse implements IPermitResponse {
 
-    protected String permitId;
+    protected String resourceId;
     protected String errorMessage;
 
     public BaseResponse() {
     }
 
-    public BaseResponse(String permitId) {
-        this.permitId = permitId;
+    public BaseResponse(String resourceId) {
+        this.resourceId = resourceId;
     }
 
-    public BaseResponse(String permitId, String errorMessage) {
-        this.permitId = permitId;
+    public BaseResponse(String resourceId, String errorMessage) {
+        this.resourceId = resourceId;
         this.errorMessage = errorMessage;
     }
 
-    public String getPermitId() {
-        return permitId;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setPermitId(String permitId) {
-        this.permitId = permitId;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
     public String getErrorMessage() {
@@ -44,19 +44,19 @@ public class BaseResponse implements IPermitResponse {
         if (this == o) return true;
         if (!(o instanceof BaseResponse)) return false;
         BaseResponse that = (BaseResponse) o;
-        return Objects.equal(permitId, that.permitId) &&
+        return Objects.equal(resourceId, that.resourceId) &&
                 Objects.equal(errorMessage, that.errorMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(permitId, errorMessage);
+        return Objects.hashCode(resourceId, errorMessage);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .toString();
     }

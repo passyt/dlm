@@ -1,7 +1,7 @@
 package com.derbysoft.nuke.dlm.server.codec;
 
 import com.derbysoft.nuke.dlm.model.*;
-import com.derbysoft.nuke.dlm.server.utils.ProtoBufUtils;
+import com.derbysoft.nuke.dlm.utils.ProtoBufUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
@@ -23,7 +23,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(REGISTER_RESPONSE)
                     .setRegisterResponse(
                             Protobuf.RegisterResponse.newBuilder()
-                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setSuccessful(actualResponse.isSuccessful())
                     )
@@ -35,7 +35,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(UNREGISTER_RESPONSE)
                     .setUnRegisterResponse(
                             Protobuf.UnRegisterResponse.newBuilder()
-                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setSuccessful(actualResponse.isSuccessful())
                     )
@@ -47,7 +47,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(EXISTING_RESPONSE)
                     .setExistingResponse(
                             Protobuf.ExistingResponse.newBuilder()
-                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setExisting(actualResponse.isExisting())
                     )
@@ -59,7 +59,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(ACQUIRE_RESPONSE)
                     .setAcquireResponse(
                             Protobuf.AcquireResponse.newBuilder()
-                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
 
                     )
@@ -71,7 +71,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(TRY_ACQUIRE_RESPONSE)
                     .setTryAcquireResponse(
                             Protobuf.TryAcquireResponse.newBuilder()
-                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setSuccessful(actualResponse.isSuccessful())
                     )
@@ -83,7 +83,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(RELEASE_RESPONSE)
                     .setReleaseResponse(
                             Protobuf.ReleaseResponse.newBuilder()
-                                    .setPermitId(ProtoBufUtils.safeValueOf(actualResponse.getPermitId()))
+                                    .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                     )
                     .build()

@@ -5,8 +5,10 @@ package com.derbysoft.nuke.dlm.model;
  */
 public interface IPermitResponse {
 
-    void setPermitId(String permitId);
+    void setResourceId(String resourceId);
 
     void setErrorMessage(String errorMessage);
+
+    String getErrorMessage();
 
 }

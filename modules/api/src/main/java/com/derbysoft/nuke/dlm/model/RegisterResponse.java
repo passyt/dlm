@@ -13,18 +13,18 @@ public class RegisterResponse extends BaseResponse {
     public RegisterResponse() {
     }
 
-    public RegisterResponse(String permitId, boolean successful) {
-        super(permitId);
+    public RegisterResponse(String resourceId, boolean successful) {
+        super(resourceId);
         this.successful = successful;
     }
 
-    public RegisterResponse(String permitId, String errorMessage, boolean successful) {
-        super(permitId, errorMessage);
+    public RegisterResponse(String resourceId, String errorMessage, boolean successful) {
+        super(resourceId, errorMessage);
         this.successful = successful;
     }
 
-    public RegisterResponse(String permitId, String errorMessage) {
-        super(permitId, errorMessage);
+    public RegisterResponse(String resourceId, String errorMessage) {
+        super(resourceId, errorMessage);
     }
 
     public boolean isSuccessful() {
@@ -52,7 +52,7 @@ public class RegisterResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .add("successful", successful)
                 .toString();

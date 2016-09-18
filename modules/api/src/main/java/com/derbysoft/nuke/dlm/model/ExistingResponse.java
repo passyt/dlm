@@ -13,13 +13,13 @@ public class ExistingResponse extends BaseResponse {
     public ExistingResponse() {
     }
 
-    public ExistingResponse(String permitId, boolean existing) {
-        super(permitId);
+    public ExistingResponse(String resourceId, boolean existing) {
+        super(resourceId);
         this.existing = existing;
     }
 
-    public ExistingResponse(String permitId, String errorMessage, boolean existing) {
-        super(permitId, errorMessage);
+    public ExistingResponse(String resourceId, String errorMessage, boolean existing) {
+        super(resourceId, errorMessage);
         this.existing = existing;
     }
 
@@ -48,7 +48,7 @@ public class ExistingResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .add("existing", existing)
                 .toString();

@@ -12,8 +12,8 @@ public class ReleaseRequest extends BaseRequest<ReleaseResponse> {
     public ReleaseRequest() {
     }
 
-    public ReleaseRequest(String permitId) {
-        super(permitId);
+    public ReleaseRequest(String resourceId) {
+        super(resourceId);
     }
 
     @Override
@@ -23,9 +23,9 @@ public class ReleaseRequest extends BaseRequest<ReleaseResponse> {
 
     @Override
     protected void doExecuteBy(IPermitManager manager, ReleaseResponse releaseResponse) {
-        IPermit permit = manager.getPermit(getPermitId());
+        IPermit permit = manager.getPermit(getResourceId());
         if (permit == null) {
-            throw new PermitNotFoundException(getPermitId());
+            throw new PermitNotFoundException(getResourceId());
         }
 
         permit.release();

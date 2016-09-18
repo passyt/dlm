@@ -1,26 +1,14 @@
-package com.derbysoft.nuke.dlm.server.codec
+package com.derbysoft.nuke.dlm.client.tcp.coder
 
-import com.derbysoft.nuke.dlm.model.AcquireRequest
-import com.derbysoft.nuke.dlm.model.ExistingRequest
-import com.derbysoft.nuke.dlm.model.Protobuf
-import com.derbysoft.nuke.dlm.model.RegisterRequest
-import com.derbysoft.nuke.dlm.model.ReleaseRequest
-import com.derbysoft.nuke.dlm.model.TryAcquireRequest
-import com.derbysoft.nuke.dlm.model.UnRegisterRequest
-import com.derbysoft.nuke.dlm.server.utils.ProtoBufUtils
+import com.derbysoft.nuke.dlm.model.*
+import com.derbysoft.nuke.dlm.server.codec.PermitRequest2ProtoBufEncoder
 import io.netty.channel.ChannelHandlerContext
-import io.netty.handler.codec.http.FullHttpRequest
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.util.concurrent.TimeUnit
 
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.ACQUIRE_REQUEST
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.EXISTING_REQUEST
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.REGISTER_REQUEST
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.RELEASE_REQUEST
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.TRY_ACQUIRE_REQUEST
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.UNREGISTER_REQUEST
+import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.*
 
 /**
  * Created by passyt on 16-9-14.

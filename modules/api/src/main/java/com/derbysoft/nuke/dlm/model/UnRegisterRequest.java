@@ -9,8 +9,8 @@ public class UnRegisterRequest extends BaseRequest<UnRegisterResponse> {
     public UnRegisterRequest() {
     }
 
-    public UnRegisterRequest(String permitId) {
-        super(permitId);
+    public UnRegisterRequest(String resourceId) {
+        super(resourceId);
     }
 
     @Override
@@ -20,6 +20,6 @@ public class UnRegisterRequest extends BaseRequest<UnRegisterResponse> {
 
     @Override
     protected void doExecuteBy(IPermitManager manager, UnRegisterResponse unRegisterResponse) {
-        unRegisterResponse.setSuccessful(manager.unregister(getPermitId()));
+        unRegisterResponse.setSuccessful(manager.unregister(getResourceId()));
     }
 }

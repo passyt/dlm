@@ -11,12 +11,12 @@ public class ReleaseResponse extends BaseResponse {
     public ReleaseResponse() {
     }
 
-    public ReleaseResponse(String permitId) {
-        super(permitId);
+    public ReleaseResponse(String resourceId) {
+        super(resourceId);
     }
 
-    public ReleaseResponse(String permitId, String errorMessage) {
-        super(permitId, errorMessage);
+    public ReleaseResponse(String resourceId, String errorMessage) {
+        super(resourceId, errorMessage);
     }
 
 }

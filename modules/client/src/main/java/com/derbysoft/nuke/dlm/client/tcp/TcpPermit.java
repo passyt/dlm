@@ -3,78 +3,40 @@ package com.derbysoft.nuke.dlm.client.tcp;
 import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.exception.PermitException;
 import com.derbysoft.nuke.dlm.model.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.EventLoopGroup;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by DT219 on 2016-09-14.
  */
-public class TcpPermit extends AbstractTcpPermitService implements IPermit {
+public class TcpPermit extends AbstractTcpPermitClient implements IPermit {
 
     private String resourceId;
 
-    public TcpPermit(String resourceId) {
-        this.resourceId = resourceId;
-    }
-
-
-    public TcpPermit(String host, int port) throws InterruptedException {
-        super(host, port);
-    }
-
-    public TcpPermit(String resourceId, String host, int port) throws InterruptedException {
-        super(host, port);
+    protected TcpPermit(String resourceId, ChannelFuture channelFuture, EventLoopGroup group) {
+        super(channelFuture, group);
         this.resourceId = resourceId;
     }
 
     @Override
     public void acquire() {
-        try {
-            AcquireResponse response = this.sendMessage(new AcquireRequest(resourceId));
-            if (!("".equals(response.getErrorMessage())) && response.getErrorMessage() != null) {
-                throw new PermitException(response.getErrorMessage());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        execute(new AcquireRequest(resourceId));
     }
 
     @Override
     public boolean tryAcquire() {
-        try {
-            TryAcquireResponse response = this.sendMessage(new TryAcquireRequest(resourceId));
-            if (!response.isSuccessful()) {
-                throw new PermitException(response.getErrorMessage());
-            }
-            return response.isSuccessful();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return execute(new TryAcquireRequest(resourceId)).isSuccessful();
     }
 
     @Override
     public boolean tryAcquire(long timeout, TimeUnit unit) {
-        try {
-            TryAcquireResponse response = this.sendMessage(new TryAcquireRequest(resourceId, timeout, unit));
-            if (!response.isSuccessful()) {
-                throw new PermitException(response.getErrorMessage());
-            }
-            return response.isSuccessful();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return execute(new TryAcquireRequest(resourceId, timeout, unit)).isSuccessful();
     }
 
     @Override
     public void release() {
-        try {
-            ReleaseResponse response = this.sendMessage(new ReleaseRequest(resourceId));
-            if (!("".equals(response.getErrorMessage())) && response.getErrorMessage() != null) {
-                throw new PermitException(response.getErrorMessage());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        execute(new ReleaseRequest(resourceId));
     }
 }
