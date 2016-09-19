@@ -1,4 +1,4 @@
-package com.derbysoft.nuke.dlm.server.codec;
+package com.derbysoft.nuke.dlm.client.tcp.coder;
 
 import com.derbysoft.nuke.dlm.model.*;
 import com.derbysoft.nuke.dlm.utils.ProtoBufUtils;
