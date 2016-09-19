@@ -18,11 +18,6 @@ public class PermitService<RS extends IPermitResponse, RQ extends IPermitRequest
 
     @Override
     public RS execute(RQ request) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(500L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return request.executeBy(permitManager);
     }
 

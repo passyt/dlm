@@ -10,12 +10,14 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Created by passyt on 16-9-19.
  */
-public class PermitStats {
+public class DefaultStats {
 
     private Peak peak = new Peak();
     private AtomicLong actives = new AtomicLong(0);
+    private ZonedDateTime lastTimestamp;
 
-    public PermitStats increment() {
+    public DefaultStats increment() {
+        lastTimestamp = ZonedDateTime.now();
         long total = actives.incrementAndGet();
         if (total >= peak.getCount().get()) {
             peak.getCount().set(total);
@@ -24,23 +26,36 @@ public class PermitStats {
         return this;
     }
 
-    public PermitStats decrement() {
+    public DefaultStats decrement() {
         actives.decrementAndGet();
         return this;
+    }
+
+    public Peak getPeak() {
+        return peak;
+    }
+
+    public AtomicLong getActives() {
+        return actives;
+    }
+
+    public ZonedDateTime getLastTimestamp() {
+        return lastTimestamp;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PermitStats)) return false;
-        PermitStats that = (PermitStats) o;
+        if (!(o instanceof DefaultStats)) return false;
+        DefaultStats that = (DefaultStats) o;
         return Objects.equal(peak, that.peak) &&
-                Objects.equal(actives, that.actives);
+                Objects.equal(actives, that.actives) &&
+                Objects.equal(lastTimestamp, that.lastTimestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(peak, actives);
+        return Objects.hashCode(peak, actives, lastTimestamp);
     }
 
     @Override
@@ -48,10 +63,11 @@ public class PermitStats {
         return MoreObjects.toStringHelper(this)
                 .add("peak", peak)
                 .add("actives", actives)
+                .add("lastTimestamp", lastTimestamp)
                 .toString();
     }
 
-    private static class Peak {
+    public static class Peak {
 
         private final AtomicLong count;
         private final AtomicReference<ZonedDateTime> timestamp;

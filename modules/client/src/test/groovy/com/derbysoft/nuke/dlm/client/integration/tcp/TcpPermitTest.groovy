@@ -32,7 +32,7 @@ class TcpPermitTest {
 
     @Test
     def void register() {
-        println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
+        println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=1000"))
         println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
         println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
     }
@@ -70,7 +70,7 @@ class TcpPermitTest {
     @Test
     def void performance() {
         def tasks = [];
-        def total = 100000;
+        def total = 1000;
         AtomicInteger a = new AtomicInteger(total);
         (1..total).each {
             tasks.add({
@@ -87,7 +87,7 @@ class TcpPermitTest {
             });
         }
 
-        def pool = Executors.newFixedThreadPool(100);
+        def pool = Executors.newFixedThreadPool(20);
         def start = System.currentTimeMillis();
         pool.invokeAll(tasks);
         def end = System.currentTimeMillis();

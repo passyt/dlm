@@ -4,7 +4,7 @@ import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.IPermitManager;
 import com.derbysoft.nuke.dlm.PermitBuilderManager;
 import com.derbysoft.nuke.dlm.PermitSpec;
-import com.derbysoft.nuke.dlm.server.status.PermitStats;
+import com.derbysoft.nuke.dlm.server.status.DefaultStats;
 import com.derbysoft.nuke.dlm.standalone.StandalonePermit;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
@@ -73,11 +73,11 @@ public class PermitManager implements IPermitManager {
     public static class StatPermit implements IPermit {
 
         private final IPermit permit;
-        private final PermitStats stats;
+        private final DefaultStats stats;
 
         public StatPermit(IPermit permit) {
             this.permit = permit;
-            this.stats = new PermitStats();
+            this.stats = new DefaultStats();
         }
 
         @Override
@@ -112,7 +112,7 @@ public class PermitManager implements IPermitManager {
             stats.decrement();
         }
 
-        public PermitStats getStats() {
+        public DefaultStats getStats() {
             return stats;
         }
 

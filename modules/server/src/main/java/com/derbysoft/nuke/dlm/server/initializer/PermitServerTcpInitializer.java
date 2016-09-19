@@ -3,6 +3,7 @@ package com.derbysoft.nuke.dlm.server.initializer;
 import com.derbysoft.nuke.dlm.server.codec.PermitResponse2ProtoBufEncoder;
 import com.derbysoft.nuke.dlm.server.codec.ProtoBuf2PermitRequestDecoder;
 import com.derbysoft.nuke.dlm.server.handler.PermitServerHandler;
+import com.derbysoft.nuke.dlm.server.status.TcpMonitorHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
@@ -34,6 +35,7 @@ public class PermitServerTcpInitializer extends PermitServerInitializer {
     protected void beforeInitChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
                 .addLast("logger", new LoggingHandler(LogLevel.DEBUG))
+                .addLast("monitorHandler", new TcpMonitorHandler())
                 .addLast("idleStateHandler", new IdleStateHandler(0, 0, 180))
                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
                 .addLast("protobufDecoder", new ProtobufDecoder(com.derbysoft.nuke.dlm.model.Protobuf.Request.getDefaultInstance()))
