@@ -44,7 +44,7 @@ public class PermitServerHandler extends ChannelHandlerAdapter {
         Logger streamLog = LoggerFactory.getLogger("http.StreamLog");
         IPermitRequest request = (IPermitRequest) msg;
         executor.execute(() -> {
-            streamLog.info("Receive request <<| {} [{}] from {}", request, request.getClass().getSimpleName(), ctx.channel().remoteAddress().toString());
+            streamLog.info("Receive request <<| {} from {}", request, ctx.channel().remoteAddress().toString());
             IPermitResponse response = null;
             try {
                 response = permitService.execute(request);
@@ -55,7 +55,7 @@ public class PermitServerHandler extends ChannelHandlerAdapter {
                 response.setHeader(request.getHeader());
                 response.setErrorMessage(e.getMessage());
             }
-            streamLog.info("Return response >>| {} [{}] to {}", response, response.getClass().getSimpleName(), ctx.channel().remoteAddress().toString());
+            streamLog.info("Return response >>| {} to {}", response, ctx.channel().remoteAddress().toString());
             ctx.writeAndFlush(response);
         });
     }
