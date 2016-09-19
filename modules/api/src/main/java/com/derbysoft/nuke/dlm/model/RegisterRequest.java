@@ -16,8 +16,12 @@ public class RegisterRequest extends BaseRequest<RegisterResponse> {
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String permitId, String permitResourceName, String permitSpec) {
-        super(permitId);
+    public RegisterRequest(String resourceId, String permitName, String specification) {
+        this(resourceId, permitName, specification, newHeader());
+    }
+
+    public RegisterRequest(String resourceId, String permitResourceName, String permitSpec, Header header) {
+        super(resourceId, header);
         this.permitResourceName = permitResourceName;
         this.permitSpec = new PermitSpec(permitSpec);
     }
@@ -29,7 +33,7 @@ public class RegisterRequest extends BaseRequest<RegisterResponse> {
 
     @Override
     protected void doExecuteBy(IPermitManager manager, RegisterResponse registerResponse) {
-        registerResponse.setSuccessful(manager.register(getPermitId(), getPermitResourceName(), getPermitSpec()));
+        registerResponse.setSuccessful(manager.register(getResourceId(), getPermitResourceName(), getPermitSpec()));
     }
 
     public String getPermitResourceName() {
@@ -66,7 +70,8 @@ public class RegisterRequest extends BaseRequest<RegisterResponse> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("header", header)
+                .add("resourceId", resourceId)
                 .add("permitResourceName", permitResourceName)
                 .add("permitSpec", permitSpec)
                 .toString();

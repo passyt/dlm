@@ -17,15 +17,22 @@ public class TryAcquireRequest extends BaseRequest<TryAcquireResponse> {
     private TimeUnit timeUnit;
 
     public TryAcquireRequest() {
-
     }
 
-    public TryAcquireRequest(String permitId) {
-        super(permitId);
+    public TryAcquireRequest(String resourceId) {
+        super(resourceId, newHeader());
     }
 
-    public TryAcquireRequest(String permitId, Long timeout, TimeUnit timeUnit) {
-        super(permitId);
+    public TryAcquireRequest(String resourceId, Header header) {
+        super(resourceId, header);
+    }
+
+    public TryAcquireRequest(String resourceId, long timeout, TimeUnit unit) {
+        this(resourceId, timeout, unit, newHeader());
+    }
+
+    public TryAcquireRequest(String resourceId, Long timeout, TimeUnit timeUnit, Header header) {
+        super(resourceId, header);
         this.timeout = timeout;
         this.timeUnit = timeUnit;
     }
@@ -37,9 +44,9 @@ public class TryAcquireRequest extends BaseRequest<TryAcquireResponse> {
 
     @Override
     protected void doExecuteBy(IPermitManager manager, TryAcquireResponse tryAcquireResponse) {
-        IPermit permit = manager.getPermit(getPermitId());
+        IPermit permit = manager.getPermit(getResourceId());
         if (permit == null) {
-            throw new PermitNotFoundException(getPermitId());
+            throw new PermitNotFoundException(getResourceId());
         }
 
         if (getTimeout() == null || getTimeout() == null) {
@@ -83,7 +90,8 @@ public class TryAcquireRequest extends BaseRequest<TryAcquireResponse> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("permitId", permitId)
+                .add("header", header)
+                .add("resourceId", resourceId)
                 .add("timeout", timeout)
                 .add("timeUnit", timeUnit)
                 .toString();

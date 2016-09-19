@@ -12,8 +12,12 @@ public class AcquireRequest extends BaseRequest<AcquireResponse> {
     public AcquireRequest() {
     }
 
-    public AcquireRequest(String permitId) {
-        super(permitId);
+    public AcquireRequest(String resourceId) {
+        this(resourceId, newHeader());
+    }
+
+    public AcquireRequest(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
     @Override
@@ -23,9 +27,9 @@ public class AcquireRequest extends BaseRequest<AcquireResponse> {
 
     @Override
     protected void doExecuteBy(IPermitManager manager, AcquireResponse acquireResponse) {
-        IPermit permit = manager.getPermit(getPermitId());
+        IPermit permit = manager.getPermit(getResourceId());
         if (permit == null) {
-            throw new PermitNotFoundException(getPermitId());
+            throw new PermitNotFoundException(getResourceId());
         }
 
         permit.acquire();

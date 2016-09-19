@@ -7,7 +7,9 @@ import com.derbysoft.nuke.dlm.IPermitManager;
  */
 public interface IPermitRequest<RS extends IPermitResponse> {
 
-    String getPermitId();
+    Header getHeader();
+
+    String getResourceId();
 
     RS newResponse();
 

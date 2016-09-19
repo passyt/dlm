@@ -4,9 +4,9 @@ import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.IPermitManager;
 import com.derbysoft.nuke.dlm.PermitBuilderManager;
 import com.derbysoft.nuke.dlm.PermitSpec;
-import com.derbysoft.nuke.dlm.standalone.*;
+import com.derbysoft.nuke.dlm.server.status.DefaultStats;
+import com.derbysoft.nuke.dlm.standalone.StandalonePermit;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by passyt on 16-9-2.
@@ -22,7 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 public class PermitManager implements IPermitManager {
 
     private Logger log = LoggerFactory.getLogger(PermitManager.class);
-    private ConcurrentMap<String, IPermit> permits = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, StatPermit> permits = new ConcurrentHashMap<>();
 
     static {
         StandalonePermit.init();
@@ -56,17 +57,68 @@ public class PermitManager implements IPermitManager {
         return permits.get(resourceId);
     }
 
-    public Map<String, IPermit> permits() {
+    public Map<String, StatPermit> permits() {
         return ImmutableMap.copyOf(this.permits);
     }
 
-    protected IPermit buildPermit(String permitName, PermitSpec spec) {
+    protected StatPermit buildPermit(String permitName, PermitSpec spec) {
         IPermit permit = PermitBuilderManager.getInstance().buildPermit(permitName, spec);
         if (permit == null) {
             throw new IllegalArgumentException("Permit not found by permit " + permitName + " with spec " + spec);
         }
 
-        return permit;
+        return new StatPermit(permit);
+    }
+
+    public static class StatPermit implements IPermit {
+
+        private final IPermit permit;
+        private final DefaultStats stats;
+
+        public StatPermit(IPermit permit) {
+            this.permit = permit;
+            this.stats = new DefaultStats();
+        }
+
+        @Override
+        public void acquire() {
+            permit.acquire();
+            stats.increment();
+        }
+
+        @Override
+        public boolean tryAcquire() {
+            if (permit.tryAcquire()) {
+                stats.increment();
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean tryAcquire(long timeout, TimeUnit unit) {
+            if (permit.tryAcquire(timeout, unit)) {
+                stats.increment();
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public void release() {
+            permit.release();
+            stats.decrement();
+        }
+
+        public DefaultStats getStats() {
+            return stats;
+        }
+
+        public IPermit getPermit() {
+            return permit;
+        }
     }
 
 }

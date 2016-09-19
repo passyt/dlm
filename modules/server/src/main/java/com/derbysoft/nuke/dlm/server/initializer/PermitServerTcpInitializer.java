@@ -3,6 +3,7 @@ package com.derbysoft.nuke.dlm.server.initializer;
 import com.derbysoft.nuke.dlm.server.codec.PermitResponse2ProtoBufEncoder;
 import com.derbysoft.nuke.dlm.server.codec.ProtoBuf2PermitRequestDecoder;
 import com.derbysoft.nuke.dlm.server.handler.PermitServerHandler;
+import com.derbysoft.nuke.dlm.server.status.TcpMonitorHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
@@ -10,6 +11,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +35,8 @@ public class PermitServerTcpInitializer extends PermitServerInitializer {
     protected void beforeInitChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
                 .addLast("logger", new LoggingHandler(LogLevel.DEBUG))
+                .addLast("monitorHandler", new TcpMonitorHandler())
+                .addLast("idleStateHandler", new IdleStateHandler(0, 0, 180))
                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
                 .addLast("protobufDecoder", new ProtobufDecoder(com.derbysoft.nuke.dlm.model.Protobuf.Request.getDefaultInstance()))
                 .addLast("permitDecoder", new ProtoBuf2PermitRequestDecoder())

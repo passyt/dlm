@@ -7,11 +7,11 @@ public class AcquireResponse extends BaseResponse {
     public AcquireResponse() {
     }
 
-    public AcquireResponse(String permitId) {
-        super(permitId);
+    public AcquireResponse(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
-    public AcquireResponse(String permitId, String errorMessage) {
-        super(permitId, errorMessage);
+    public AcquireResponse(String resourceId, String errorMessage, Header header) {
+        super(resourceId, errorMessage, header);
     }
 }

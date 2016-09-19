@@ -1,7 +1,7 @@
-package com.derbysoft.nuke.dlm.server.codec;
+package com.derbysoft.nuke.dlm.client.tcp.coder;
 
 import com.derbysoft.nuke.dlm.model.*;
-import com.derbysoft.nuke.dlm.server.utils.ProtoBufUtils;
+import com.derbysoft.nuke.dlm.utils.ProtoBufUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.*;
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.TRY_ACQUIRE_REQUEST;
 
 /**
  * Created by passyt on 16-9-4.
@@ -23,8 +22,9 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(REGISTER_REQUEST)
                     .setRegisterRequest(
                             Protobuf.RegisterRequest.newBuilder()
-                                    .setPermitId(actualRequest.getPermitId())
-                                    .setPermitResourceName(ProtoBufUtils.safeValueOf(actualRequest.getPermitResourceName()))
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
+                                    .setResourceId(actualRequest.getResourceId())
+                                    .setPermitName(ProtoBufUtils.safeValueOf(actualRequest.getPermitResourceName()))
                                     .setPermitSpec(actualRequest.getPermitSpec().getSpecification())
                     )
                     .build());
@@ -33,7 +33,8 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(UNREGISTER_REQUEST)
                     .setUnRegisterRequest(
                             Protobuf.UnRegisterRequest.newBuilder()
-                                    .setPermitId(((UnRegisterRequest) request).getPermitId())
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
+                                    .setResourceId(((UnRegisterRequest) request).getResourceId())
                     )
                     .build());
         } else if (request instanceof ExistingRequest) {
@@ -41,7 +42,8 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(EXISTING_REQUEST)
                     .setExistingRequest(
                             Protobuf.ExistingRequest.newBuilder()
-                                    .setPermitId(((ExistingRequest) request).getPermitId())
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
+                                    .setResourceId(((ExistingRequest) request).getResourceId())
                     )
                     .build());
         } else if (request instanceof AcquireRequest) {
@@ -49,7 +51,8 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(ACQUIRE_REQUEST)
                     .setAcquireRequest(
                             Protobuf.AcquireRequest.newBuilder()
-                                    .setPermitId(((AcquireRequest) request).getPermitId())
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
+                                    .setResourceId(((AcquireRequest) request).getResourceId())
                     )
                     .build());
         } else if (request instanceof TryAcquireRequest) {
@@ -58,7 +61,8 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(TRY_ACQUIRE_REQUEST)
                     .setTryAcquireRequest(
                             Protobuf.TryAcquireRequest.newBuilder()
-                                    .setPermitId(tryAcquireRequest.getPermitId())
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
+                                    .setResourceId(tryAcquireRequest.getResourceId())
                                     .setTimeout(ProtoBufUtils.safeValueOf(tryAcquireRequest.getTimeout()))
                                     .setTimeUnit(
                                             Protobuf.TryAcquireRequest.TIME_UNIT.valueOf(
@@ -73,7 +77,8 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(RELEASE_REQUEST)
                     .setReleaseRequest(
                             Protobuf.ReleaseRequest.newBuilder()
-                                    .setPermitId(releaseRequest.getPermitId())
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
+                                    .setResourceId(releaseRequest.getResourceId())
                     )
                     .build());
         } else {

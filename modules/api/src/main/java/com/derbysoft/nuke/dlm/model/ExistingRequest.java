@@ -9,8 +9,12 @@ public class ExistingRequest extends BaseRequest<ExistingResponse> {
     public ExistingRequest() {
     }
 
-    public ExistingRequest(String permitId) {
-        super(permitId);
+    public ExistingRequest(String resourceId) {
+        this(resourceId, newHeader());
+    }
+
+    public ExistingRequest(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
     @Override
@@ -20,6 +24,6 @@ public class ExistingRequest extends BaseRequest<ExistingResponse> {
 
     @Override
     protected void doExecuteBy(IPermitManager manager, ExistingResponse existingResponse) {
-        existingResponse.setExisting(manager.isExisting(getPermitId()));
+        existingResponse.setExisting(manager.isExisting(getResourceId()));
     }
 }

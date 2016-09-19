@@ -1,4 +1,4 @@
-package com.derbysoft.nuke.dlm.server.utils;
+package com.derbysoft.nuke.dlm.utils;
 
 /**
  * Created by passyt on 16-9-4.

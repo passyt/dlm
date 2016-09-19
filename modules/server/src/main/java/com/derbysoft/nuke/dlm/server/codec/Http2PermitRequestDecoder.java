@@ -1,10 +1,12 @@
 package com.derbysoft.nuke.dlm.server.codec;
 
-import com.derbysoft.nuke.dlm.IPermit;
 import com.derbysoft.nuke.dlm.model.*;
 import com.derbysoft.nuke.dlm.server.PermitManager;
+import com.derbysoft.nuke.dlm.server.status.DefaultStats;
+import com.derbysoft.nuke.dlm.server.status.StatsCenter;
 import com.google.common.base.Splitter;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -72,41 +75,45 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
             return;
         }
 
+        Header header = new Header(request.headers().getAndConvert("transactionId", UUID.randomUUID().toString().replace("-", "")));
         String uri = request.uri();
         log.debug("Request uri: {}", uri);
         if ("/help".equals(uri)) {
             help(ctx);
             return;
+        } else if ("/status".equals(uri)) {
+            status(ctx);
+            return;
         }
 
         Map<String, String> parameters = toParameters(uri.substring(1));
         if (parameters.containsKey(METHOD_REGISTER)) {
-            String resourceId = parameters.get(METHOD_REGISTER);
-            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), parameters.get(PARAMETER_SPEC)));
+            String resourceId = optional(parameters, METHOD_REGISTER);
+            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), optional(parameters, PARAMETER_SPEC), header));
             return;
         } else if (parameters.containsKey(METHOD_UNREGISTER)) {
-            String resourceId = parameters.get(METHOD_UNREGISTER);
-            out.add(new UnRegisterRequest(resourceId));
+            String resourceId = optional(parameters, METHOD_UNREGISTER);
+            out.add(new UnRegisterRequest(resourceId, header));
             return;
         } else if (parameters.containsKey(METHOD_EXISTING)) {
-            String resourceId = parameters.get(METHOD_EXISTING);
-            out.add(new ExistingRequest(resourceId));
+            String resourceId = optional(parameters, METHOD_EXISTING);
+            out.add(new ExistingRequest(resourceId, header));
             return;
         } else if (parameters.containsKey(METHOD_PERMIT)) {
-            String resourceId = parameters.get(METHOD_PERMIT);
-            String action = parameters.get(PARAMETER_ACTION);
+            String resourceId = optional(parameters, METHOD_PERMIT);
+            String action = optional(parameters, PARAMETER_ACTION);
             if (ACTION_ACQUIRE.equals(action)) {
-                out.add(new AcquireRequest(resourceId));
+                out.add(new AcquireRequest(resourceId, header));
                 return;
             } else if (ACTION_TRYACQUIRE.equals(action)) {
                 if (parameters.containsKey(PARAMETER_TIMEOUT) && parameters.containsKey(PARAMETER_TIMEUNIT)) {
-                    out.add(new TryAcquireRequest(resourceId, Long.parseLong(required(parameters, PARAMETER_TIMEOUT)), TimeUnit.valueOf(required(parameters, PARAMETER_TIMEUNIT).toUpperCase())));
+                    out.add(new TryAcquireRequest(resourceId, Long.parseLong(required(parameters, PARAMETER_TIMEOUT)), TimeUnit.valueOf(required(parameters, PARAMETER_TIMEUNIT).toUpperCase()), header));
                 } else {
-                    out.add(new TryAcquireRequest(resourceId));
+                    out.add(new TryAcquireRequest(resourceId, header));
                 }
                 return;
             } else if (ACTION_RELEASE.equals(action)) {
-                out.add(new ReleaseRequest(resourceId));
+                out.add(new ReleaseRequest(resourceId, header));
                 return;
             }
         }
@@ -119,8 +126,118 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
         content.append(HELP_MESSAGE);
         content.append("Status:\n");
         content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
-        for (Map.Entry<String, IPermit> entry : manager.permits().entrySet()) {
-            content.append("<tr>").append("<td>").append(entry.getKey()).append("</td>").append("<td>").append(entry.getValue()).append("</td>").append("</tr>");
+        for (Map.Entry<String, PermitManager.StatPermit> entry : manager.permits().entrySet()) {
+            content.append("<tr>").append("<td>").append(entry.getKey()).append("</td>").append("<td>").append(entry.getValue().getPermit()).append("</td>").append("</tr>");
+        }
+        content.append("</table>\n");
+
+        DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(content.toString().getBytes("UTF-8")));
+        httpResponse.headers().add("Content-Type", "text/html; charset=utf-8");
+        httpResponse.headers().add("Server", "Netty-5.0");
+        ctx.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    protected void status(ChannelHandlerContext ctx) throws UnsupportedEncodingException {
+        StringBuilder content = new StringBuilder();
+        DefaultStats trafficStats = StatsCenter.getInstance().getTcpTrafficStats();
+        Set<Channel> channels = StatsCenter.getInstance().getTcpChannels();
+        content.append("<h2>TCP Traffic Status</h2>\n");
+        content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
+        content.append("<tr>")
+                .append("<th>").append("Peak Connections").append("</th>")
+                .append("<th>").append("Peak Timestamp").append("</th>")
+                .append("<th>").append("Current Active Connections").append("</th>")
+                .append("<th>").append("Last Access Timestamp").append("</th>")
+                .append("</tr>");
+        content.append("<tr>")
+                .append("<td>").append(trafficStats.getPeak().getCount()).append("</td>")
+                .append("<td>").append(trafficStats.getPeak().getTimestamp()).append("</td>")
+                .append("<td>").append(trafficStats.getActives()).append("</td>")
+                .append("<td>").append(trafficStats.getLastTimestamp()).append("</td>")
+                .append("</tr>");
+        content.append("</table>\n");
+
+        content.append("<h4>Active Connections</h4>\n");
+        content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
+        content.append("<tr>")
+                .append("<th>").append("Id").append("</th>")
+                .append("<th>").append("Local Address").append("</th>")
+                .append("<th>").append("Remote Address").append("</th>")
+                .append("<th>").append("Active").append("</th>")
+                .append("<th>").append("Open").append("</th>")
+                .append("<th>").append("Connect Timeout").append("</th>")
+                .append("</tr>");
+        for (Channel channel : channels) {
+            content.append("<tr>")
+                    .append("<td>").append(channel.id()).append("</td>")
+                    .append("<td>").append(channel.localAddress()).append("</td>")
+                    .append("<td>").append(channel.remoteAddress()).append("</td>")
+                    .append("<td>").append(channel.isActive()).append("</td>")
+                    .append("<td>").append(channel.isOpen()).append("</td>")
+                    .append("<td>").append(channel.config().getConnectTimeoutMillis()).append("</td>")
+                    .append("</tr>");
+        }
+        content.append("</table>\n");
+
+        trafficStats = StatsCenter.getInstance().getHttpTrafficStats();
+        channels = StatsCenter.getInstance().getHttpChannels();
+        content.append("<h2>HTTP Traffic Status</h2>\n");
+        content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
+        content.append("<tr>")
+                .append("<th>").append("Peak Connections").append("</th>")
+                .append("<th>").append("Peak Timestamp").append("</th>")
+                .append("<th>").append("Current Active Connections").append("</th>")
+                .append("<th>").append("Last Access Timestamp").append("</th>")
+                .append("</tr>");
+        content.append("<tr>")
+                .append("<td>").append(trafficStats.getPeak().getCount()).append("</td>")
+                .append("<td>").append(trafficStats.getPeak().getTimestamp()).append("</td>")
+                .append("<td>").append(trafficStats.getActives()).append("</td>")
+                .append("<td>").append(trafficStats.getLastTimestamp()).append("</td>")
+                .append("</tr>");
+        content.append("</table>\n");
+
+        content.append("<h4>Active Connections</h4>\n");
+        content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
+        content.append("<tr>")
+                .append("<th>").append("Id").append("</th>")
+                .append("<th>").append("Local Address").append("</th>")
+                .append("<th>").append("Remote Address").append("</th>")
+                .append("<th>").append("Active").append("</th>")
+                .append("<th>").append("Open").append("</th>")
+                .append("<th>").append("Connect Timeout").append("</th>")
+                .append("</tr>");
+        for (Channel channel : channels) {
+            content.append("<tr>")
+                    .append("<td>").append(channel.id()).append("</td>")
+                    .append("<td>").append(channel.localAddress()).append("</td>")
+                    .append("<td>").append(channel.remoteAddress()).append("</td>")
+                    .append("<td>").append(channel.isActive()).append("</td>")
+                    .append("<td>").append(channel.isOpen()).append("</td>")
+                    .append("<td>").append(channel.config().getConnectTimeoutMillis()).append("</td>")
+                    .append("</tr>");
+        }
+        content.append("</table>\n");
+
+        content.append("<h2>Permit Status</h2>\n");
+        content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
+        content.append("<tr>")
+                .append("<th>").append("Resource").append("</th>")
+                .append("<th>").append("Permit").append("</th>")
+                .append("<th>").append("Peak Permits").append("</th>")
+                .append("<th>").append("Peak Timestamp").append("</th>")
+                .append("<th>").append("Current Permits").append("</th>")
+                .append("<th>").append("Last Acquire Timestamp").append("</th>")
+                .append("</tr>");
+        for (Map.Entry<String, PermitManager.StatPermit> entry : manager.permits().entrySet()) {
+            content.append("<tr>")
+                    .append("<td>").append(entry.getKey()).append("</td>")
+                    .append("<td>").append(entry.getValue().getPermit()).append("</td>")
+                    .append("<td>").append(entry.getValue().getStats().getPeak().getCount()).append("</td>")
+                    .append("<td>").append(entry.getValue().getStats().getPeak().getTimestamp()).append("</td>")
+                    .append("<td>").append(entry.getValue().getStats().getActives()).append("</td>")
+                    .append("<td>").append(entry.getValue().getStats().getLastTimestamp()).append("</td>")
+                    .append("</tr>");
         }
         content.append("</table>\n");
 
@@ -150,12 +267,20 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
     }
 
     protected String required(Map<String, String> parameters, String key) {
-        String value = parameters.get(key);
+        String value = optional(parameters, key);
         if (value == null) {
             throw new IllegalArgumentException(key + " is required");
         }
 
         return value;
+    }
+
+    protected String optional(Map<String, String> parameters, String key) {
+        try {
+            return URLDecoder.decode(parameters.get(key), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Invalid key " + key + " by values " + parameters, e);
+        }
     }
 
 }
