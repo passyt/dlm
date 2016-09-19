@@ -35,14 +35,21 @@ class AbstractTcpPermitClient {
     protected Channel channel;
     protected Bootstrap bootstrap;
 
+    private String host;
+    private int port;
+
     private static final Cache<String, ResponseFuture> FUTURES = CacheBuilder.from("expireAfterWrite=1h").build();
 
     public AbstractTcpPermitClient(String host, int port) throws InterruptedException {
+        this.host = host;
+        this.port = port;
+
         bootstrap = new Bootstrap();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32 * 1024)
                 .option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8 * 1024)
 //                .option(ChannelOption.SO_TIMEOUT, 5000)
@@ -64,7 +71,8 @@ class AbstractTcpPermitClient {
                                     @Override
                                     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
                                         log.warn("Connection is down and reconnecting...");
-                                        AbstractTcpPermitClient.this.doConnect(host, port);
+                                        AbstractTcpPermitClient.this.channel = null;
+                                        AbstractTcpPermitClient.this.doConnectIfNecessary(true);
                                     }
 
                                     @Override
@@ -77,38 +85,61 @@ class AbstractTcpPermitClient {
                                         }
                                     }
 
+                                    @Override
+                                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                        super.exceptionCaught(ctx, cause);
+                                        log.error("Exception", cause);
+                                    }
+
                                 });
                     }
 
                 });
-        doConnect(host, port);
+        doConnectIfNecessary(false);
     }
 
-    protected AbstractTcpPermitClient(Channel channel, EventLoopGroup group) {
+    protected AbstractTcpPermitClient(Channel channel, EventLoopGroup group, Bootstrap bootstrap) {
         this.channel = channel;
         this.group = group;
     }
 
-    private void doConnect(String host, int port) throws InterruptedException {
-        log.info("Connecting to {}:{}", host, port);
-        channel = bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+    private void doConnectIfNecessary(boolean async) {
+        if (channel != null) {
+            return;
+        }
 
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                if (future.isSuccess()) {
-                    log.info("Connection is ok");
-                } else {
-                    future.channel().eventLoop().schedule(() -> {
-                        try {
-                            doConnect(host, port);
-                        } catch (InterruptedException e) {
-                            log.error("Error", e);
-                        }
-                    }, 3, TimeUnit.SECONDS);
+        synchronized (group) {
+            log.debug("Connecting to {}:{}", host, port);
+            if (!async) {
+                RuntimeException exception = null;
+                for (int i = 0; i < 3; i++) {
+                    try {
+                        this.channel = bootstrap.connect(host, port).sync().channel();
+                        return;
+                    } catch (InterruptedException e) {
+                        exception = new IllegalStateException(e);
+                    }
                 }
-            }
 
-        }).channel();
+                throw exception;
+            } else {
+                bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (future.isSuccess()) {
+                            channel = future.channel();
+                        } else {
+                            log.warn("Connecting to {}:{} failed and retry", host, port);
+                            future.channel().eventLoop().schedule(() -> {
+                                doConnectIfNecessary(true);
+                            }, 3, TimeUnit.SECONDS);
+                        }
+                    }
+
+                });
+            }
+        }
     }
 
     public void shutdown() {
@@ -116,6 +147,8 @@ class AbstractTcpPermitClient {
     }
 
     protected <RS extends IPermitResponse> IResponseFuture<RS> send(IPermitRequest<RS> request) {
+        doConnectIfNecessary(false);
+
         final ResponseFuture<RS> responseFuture = new ResponseFuture<RS>();
         FUTURES.put(request.getHeader().getTransactionId(), responseFuture);
         channel.writeAndFlush(request);

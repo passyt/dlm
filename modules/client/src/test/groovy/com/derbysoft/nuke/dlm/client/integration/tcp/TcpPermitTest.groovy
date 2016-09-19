@@ -70,7 +70,7 @@ class TcpPermitTest {
     @Test
     def void performance() {
         def tasks = [];
-        def total = 2;
+        def total = 200;
         AtomicInteger a = new AtomicInteger(total);
         (1..total).each {
             tasks.add({
@@ -94,7 +94,7 @@ class TcpPermitTest {
         println((end - start) + " ms: " + total * 1000f / (end - start) + " tps");
         pool.shutdown();
 
-        TimeUnit.SECONDS.sleep(3000L)
+        TimeUnit.SECONDS.sleep(30L)
     }
 
 }
