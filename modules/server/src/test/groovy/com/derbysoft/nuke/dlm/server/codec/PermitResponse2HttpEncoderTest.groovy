@@ -1,6 +1,7 @@
 package com.derbysoft.nuke.dlm.server.codec
 
 import com.alibaba.fastjson.JSON
+import com.derbysoft.nuke.dlm.model.Header
 import com.derbysoft.nuke.dlm.model.IPermitResponse
 import com.derbysoft.nuke.dlm.model.RegisterResponse
 import io.netty.buffer.Unpooled
@@ -22,6 +23,8 @@ class PermitResponse2HttpEncoderTest extends Specification {
     def ChannelHandlerContext ctx;
     @Shared
     def resourceId = UUID.randomUUID().toString();
+    @Shared
+    def transactionId = UUID.randomUUID().toString();
 
     def setup() {
         encoder = new PermitResponse2HttpEncoder();
@@ -33,7 +36,7 @@ class PermitResponse2HttpEncoderTest extends Specification {
         def out = [];
         def channelFuture = Mock(ChannelFuture);
         def actualResponse = null;
-        def permitResponse = new RegisterResponse(resourceId, true);
+        def permitResponse = new RegisterResponse(resourceId, true, new Header(transactionId));
 
         when:
         encoder.encode(ctx, permitResponse, out);

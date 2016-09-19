@@ -7,10 +7,7 @@ import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.DecoderResult
-import io.netty.handler.codec.http.DefaultFullHttpResponse
-import io.netty.handler.codec.http.FullHttpRequest
-import io.netty.handler.codec.http.HttpResponseStatus
-import io.netty.handler.codec.http.HttpVersion
+import io.netty.handler.codec.http.*
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -27,6 +24,8 @@ class Http2PermitRequestDecoderTest extends Specification {
     def PermitManager manager;
     @Shared
     def resourceId = UUID.randomUUID().toString();
+    @Shared
+    def transactionId = UUID.randomUUID().toString();
 
     def setup() {
         manager = Mock();
@@ -39,6 +38,7 @@ class Http2PermitRequestDecoderTest extends Specification {
         given:
         def out = [];
         def decoderResult = Mock(DecoderResult);
+        def httpHeaders = Mock(HttpHeaders)
 
         when:
         decoder.decode(ctx, request, out);
@@ -46,6 +46,8 @@ class Http2PermitRequestDecoderTest extends Specification {
         then:
         1 * request.decoderResult() >> decoderResult
         1 * decoderResult.isSuccess() >> true
+        1 * request.headers() >> httpHeaders
+        1 * httpHeaders.getAndConvert("transactionId", _) >> transactionId
         1 * request.uri() >> uri
 
         expect:
@@ -55,13 +57,13 @@ class Http2PermitRequestDecoderTest extends Specification {
 
         where:
         uri                                                                  | permitRequest
-        "/register/${resourceId}/permitname/TestPermit/spec/TestSpec"        | new RegisterRequest(resourceId, "TestPermit", "TestSpec")
-        "/unregister/${resourceId}"                                          | new UnRegisterRequest(resourceId)
-        "/existing/${resourceId}"                                            | new ExistingRequest(resourceId)
-        "/permit/${resourceId}/action/acquire"                               | new AcquireRequest(resourceId)
-        "/permit/${resourceId}/action/tryacquire"                            | new TryAcquireRequest(resourceId)
-        "/permit/${resourceId}/action/tryacquire/timeout/1/timeunit/seconds" | new TryAcquireRequest(resourceId, 1L, TimeUnit.SECONDS)
-        "/permit/${resourceId}/action/release"                               | new ReleaseRequest(resourceId)
+        "/register/${resourceId}/permitname/TestPermit/spec/TestSpec"        | new RegisterRequest(resourceId, "TestPermit", "TestSpec", new Header(transactionId))
+        "/unregister/${resourceId}"                                          | new UnRegisterRequest(resourceId, new Header(transactionId))
+        "/existing/${resourceId}"                                            | new ExistingRequest(resourceId, new Header(transactionId))
+        "/permit/${resourceId}/action/acquire"                               | new AcquireRequest(resourceId, new Header(transactionId))
+        "/permit/${resourceId}/action/tryacquire"                            | new TryAcquireRequest(resourceId, new Header(transactionId))
+        "/permit/${resourceId}/action/tryacquire/timeout/1/timeunit/seconds" | new TryAcquireRequest(resourceId, 1L, TimeUnit.SECONDS, new Header(transactionId))
+        "/permit/${resourceId}/action/release"                               | new ReleaseRequest(resourceId, new Header(transactionId))
     }
 
     void help() {
@@ -70,6 +72,7 @@ class Http2PermitRequestDecoderTest extends Specification {
         def decoderResult = Mock(DecoderResult);
         def actualResponse = null;
         def channelFuture = Mock(ChannelFuture);
+        def httpHeaders = new DefaultHttpHeaders();
 
         when:
         decoder.decode(ctx, request, out);
@@ -77,6 +80,7 @@ class Http2PermitRequestDecoderTest extends Specification {
         then:
         1 * request.decoderResult() >> decoderResult
         1 * decoderResult.isSuccess() >> true
+        1 * request.headers() >> httpHeaders
         1 * request.uri() >> "/help"
         1 * manager.permits() >> [:]
         1 * ctx.writeAndFlush(_) >> {

@@ -22,7 +22,7 @@ class TcpPermitTest {
 
     @Before
     def void startup() {
-        manager = new TcpPermitManager("127.0.0.1", 8081);
+        manager = new TcpPermitManager("10.200.152.69", 8081);
     }
 
 //    @After
@@ -70,7 +70,7 @@ class TcpPermitTest {
     @Test
     def void performance() {
         def tasks = [];
-        def total = 200;
+        def total = 100000;
         AtomicInteger a = new AtomicInteger(total);
         (1..total).each {
             tasks.add({
@@ -93,8 +93,6 @@ class TcpPermitTest {
         def end = System.currentTimeMillis();
         println((end - start) + " ms: " + total * 1000f / (end - start) + " tps");
         pool.shutdown();
-
-        TimeUnit.SECONDS.sleep(30L)
     }
 
 }

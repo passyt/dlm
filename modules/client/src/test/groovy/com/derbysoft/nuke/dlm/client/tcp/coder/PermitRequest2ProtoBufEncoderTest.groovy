@@ -41,6 +41,7 @@ class PermitRequest2ProtoBufEncoderTest extends Specification {
                 .setRegisterRequest(
                 Protobuf.RegisterRequest
                         .newBuilder()
+                        .setHeader(Protobuf.Header.newBuilder().setTransactionId(permitRequest.getHeader().getTransactionId()))
                         .setResourceId(resourceId)
                         .setPermitName("permitResourceName")
                         .setPermitSpec("permitSpec")
@@ -51,6 +52,7 @@ class PermitRequest2ProtoBufEncoderTest extends Specification {
                 .setUnRegisterRequest(
                 Protobuf.UnRegisterRequest
                         .newBuilder()
+                        .setHeader(Protobuf.Header.newBuilder().setTransactionId(permitRequest.getHeader().getTransactionId()))
                         .setResourceId(resourceId)
         ).build()
         new ExistingRequest(resourceId)                                     | Protobuf.Request
@@ -59,6 +61,7 @@ class PermitRequest2ProtoBufEncoderTest extends Specification {
                 .setExistingRequest(
                 Protobuf.ExistingRequest
                         .newBuilder()
+                        .setHeader(Protobuf.Header.newBuilder().setTransactionId(permitRequest.getHeader().getTransactionId()))
                         .setResourceId(resourceId)
         ).build()
         new AcquireRequest(resourceId)                                      | Protobuf.Request
@@ -67,6 +70,7 @@ class PermitRequest2ProtoBufEncoderTest extends Specification {
                 .setAcquireRequest(
                 Protobuf.AcquireRequest
                         .newBuilder()
+                        .setHeader(Protobuf.Header.newBuilder().setTransactionId(permitRequest.getHeader().getTransactionId()))
                         .setResourceId(resourceId)
         ).build()
         new TryAcquireRequest(resourceId, 1L, TimeUnit.DAYS)                | Protobuf.Request
@@ -75,6 +79,7 @@ class PermitRequest2ProtoBufEncoderTest extends Specification {
                 .setTryAcquireRequest(
                 Protobuf.TryAcquireRequest
                         .newBuilder()
+                        .setHeader(Protobuf.Header.newBuilder().setTransactionId(permitRequest.getHeader().getTransactionId()))
                         .setResourceId(resourceId)
                         .setTimeout(1L)
                         .setTimeUnit(Protobuf.TryAcquireRequest.TIME_UNIT.DAYS)
@@ -85,6 +90,7 @@ class PermitRequest2ProtoBufEncoderTest extends Specification {
                 .setReleaseRequest(
                 Protobuf.ReleaseRequest
                         .newBuilder()
+                        .setHeader(Protobuf.Header.newBuilder().setTransactionId(permitRequest.getHeader().getTransactionId()))
                         .setResourceId(resourceId)
         ).build()
     }
