@@ -73,6 +73,7 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
             return;
         }
 
+        Header header = new Header(request.headers().getAndConvert("transactionId", UUID.randomUUID().toString().replace("-", "")));
         String uri = request.uri();
         log.debug("Request uri: {}", uri);
         if ("/help".equals(uri)) {
@@ -83,31 +84,31 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
         Map<String, String> parameters = toParameters(uri.substring(1));
         if (parameters.containsKey(METHOD_REGISTER)) {
             String resourceId = optional(parameters, METHOD_REGISTER);
-            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), optional(parameters, PARAMETER_SPEC)));
+            out.add(new RegisterRequest(resourceId, required(parameters, PARAMETER_PERMITNAME), optional(parameters, PARAMETER_SPEC), header));
             return;
         } else if (parameters.containsKey(METHOD_UNREGISTER)) {
             String resourceId = optional(parameters, METHOD_UNREGISTER);
-            out.add(new UnRegisterRequest(resourceId));
+            out.add(new UnRegisterRequest(resourceId, header));
             return;
         } else if (parameters.containsKey(METHOD_EXISTING)) {
             String resourceId = optional(parameters, METHOD_EXISTING);
-            out.add(new ExistingRequest(resourceId));
+            out.add(new ExistingRequest(resourceId, header));
             return;
         } else if (parameters.containsKey(METHOD_PERMIT)) {
             String resourceId = optional(parameters, METHOD_PERMIT);
             String action = optional(parameters, PARAMETER_ACTION);
             if (ACTION_ACQUIRE.equals(action)) {
-                out.add(new AcquireRequest(resourceId));
+                out.add(new AcquireRequest(resourceId, header));
                 return;
             } else if (ACTION_TRYACQUIRE.equals(action)) {
                 if (parameters.containsKey(PARAMETER_TIMEOUT) && parameters.containsKey(PARAMETER_TIMEUNIT)) {
-                    out.add(new TryAcquireRequest(resourceId, Long.parseLong(required(parameters, PARAMETER_TIMEOUT)), TimeUnit.valueOf(required(parameters, PARAMETER_TIMEUNIT).toUpperCase())));
+                    out.add(new TryAcquireRequest(resourceId, Long.parseLong(required(parameters, PARAMETER_TIMEOUT)), TimeUnit.valueOf(required(parameters, PARAMETER_TIMEUNIT).toUpperCase()), header));
                 } else {
-                    out.add(new TryAcquireRequest(resourceId));
+                    out.add(new TryAcquireRequest(resourceId, header));
                 }
                 return;
             } else if (ACTION_RELEASE.equals(action)) {
-                out.add(new ReleaseRequest(resourceId));
+                out.add(new ReleaseRequest(resourceId, header));
                 return;
             }
         }

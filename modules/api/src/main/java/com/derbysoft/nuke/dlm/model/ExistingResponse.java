@@ -13,13 +13,17 @@ public class ExistingResponse extends BaseResponse {
     public ExistingResponse() {
     }
 
-    public ExistingResponse(String resourceId, boolean existing) {
-        super(resourceId);
+    public ExistingResponse(String resourceId, boolean existing, Header header) {
+        super(resourceId, header);
         this.existing = existing;
     }
 
-    public ExistingResponse(String resourceId, String errorMessage, boolean existing) {
-        super(resourceId, errorMessage);
+    public ExistingResponse(String resourceId, String errorMessage, Header header) {
+        super(resourceId, errorMessage, header);
+    }
+
+    public ExistingResponse(String resourceId, String errorMessage, boolean existing, Header header) {
+        super(resourceId, errorMessage, header);
         this.existing = existing;
     }
 
@@ -48,6 +52,7 @@ public class ExistingResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("header", header)
                 .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .add("existing", existing)

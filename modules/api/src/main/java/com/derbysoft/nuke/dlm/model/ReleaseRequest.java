@@ -13,7 +13,11 @@ public class ReleaseRequest extends BaseRequest<ReleaseResponse> {
     }
 
     public ReleaseRequest(String resourceId) {
-        super(resourceId);
+        this(resourceId, newHeader());
+    }
+
+    public ReleaseRequest(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
     @Override

@@ -4,49 +4,58 @@ option java_package = "com.derbysoft.nuke.dlm.model";
 option java_outer_classname = "Protobuf";
 
 message RegisterRequest {
-    string resourceId = 1;
-    string permitName = 2;
-    string permitSpec = 3;
+    Header header = 1;
+    string resourceId = 2;
+    string permitName = 3;
+    string permitSpec = 4;
 }
 
 message RegisterResponse {
-    string resourceId = 1;
-    string errorMessage = 2;
-    bool successful = 3;
+    Header header = 1;
+    string resourceId = 2;
+    string errorMessage = 3;
+    bool successful = 4;
 }
 
 message UnRegisterRequest {
-    string resourceId = 1;
+    Header header = 1;
+    string resourceId = 2;
 }
 
 message UnRegisterResponse {
-    string resourceId = 1;
-    string errorMessage = 2;
-    bool successful = 3;
+    Header header = 1;
+    string resourceId = 2;
+    string errorMessage = 3;
+    bool successful = 4;
 }
 
 message ExistingRequest {
-    string resourceId = 1;
+    Header header = 1;
+    string resourceId = 2;
 }
 
 message ExistingResponse {
-    string resourceId = 1;
-    string errorMessage = 2;
-    bool existing = 3;
+    Header header = 1;
+    string resourceId = 2;
+    string errorMessage = 3;
+    bool existing = 4;
 }
 
 message AcquireRequest {
-    string resourceId = 1;
+    Header header = 1;
+    string resourceId = 2;
 }
 
 message AcquireResponse {
-    string resourceId = 1;
-    string errorMessage = 2;
+    Header header = 1;
+    string resourceId = 2;
+    string errorMessage = 3;
 }
 
 message TryAcquireRequest {
-    string resourceId = 1;
-    int64 timeout = 2;
+    Header header = 1;
+    string resourceId = 2;
+    int64 timeout = 3;
     enum TIME_UNIT {
         DAYS = 0;
         HOURS = 1;
@@ -56,22 +65,25 @@ message TryAcquireRequest {
         NANOSECONDS = 5;
         SECONDS = 6;
     }
-    TIME_UNIT timeUnit = 7;
+    TIME_UNIT timeUnit = 4;
 }
 
 message TryAcquireResponse {
-    string resourceId = 1;
-    string errorMessage = 2;
-    bool successful = 3;
+    Header header = 1;
+    string resourceId = 2;
+    string errorMessage = 3;
+    bool successful = 4;
 }
 
 message ReleaseRequest{
-    string resourceId = 1;
+    Header header = 1;
+    string resourceId = 2;
 }
 
 message ReleaseResponse {
-    string resourceId = 1;
-    string errorMessage = 2;
+    Header header = 1;
+    string resourceId = 2;
+    string errorMessage = 3;
 }
 
 message Request {
@@ -84,13 +96,14 @@ message Request {
         RELEASE_REQUEST = 5;
     }
 
-    RequestType type = 1;
-    RegisterRequest registerRequest = 2;
-    UnRegisterRequest unRegisterRequest = 3;
-    ExistingRequest existingRequest = 4;
-    AcquireRequest acquireRequest = 5;
-    TryAcquireRequest tryAcquireRequest = 6;
-    ReleaseRequest releaseRequest = 7;
+    Header header = 1;
+    RequestType type = 2;
+    RegisterRequest registerRequest = 3;
+    UnRegisterRequest unRegisterRequest = 4;
+    ExistingRequest existingRequest = 5;
+    AcquireRequest acquireRequest = 6;
+    TryAcquireRequest tryAcquireRequest = 7;
+    ReleaseRequest releaseRequest = 8;
 }
 
 message Response {
@@ -103,12 +116,16 @@ message Response {
         RELEASE_RESPONSE = 5;
     }
 
-    ResponseType type = 1;
-    RegisterResponse registerResponse = 2;
-    UnRegisterResponse unRegisterResponse = 3;
-    ExistingResponse existingResponse = 4;
-    AcquireResponse acquireResponse = 5;
-    TryAcquireResponse tryAcquireResponse = 6;
-    ReleaseResponse releaseResponse = 7;
+    Header header = 1;
+    ResponseType type = 2;
+    RegisterResponse registerResponse = 3;
+    UnRegisterResponse unRegisterResponse = 4;
+    ExistingResponse existingResponse = 5;
+    AcquireResponse acquireResponse = 6;
+    TryAcquireResponse tryAcquireResponse = 7;
+    ReleaseResponse releaseResponse = 8;
+}
 
+message Header{
+    string transactionId = 1;
 }

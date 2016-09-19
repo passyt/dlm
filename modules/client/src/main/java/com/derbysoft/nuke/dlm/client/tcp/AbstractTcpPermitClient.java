@@ -5,6 +5,8 @@ import com.derbysoft.nuke.dlm.exception.PermitException;
 import com.derbysoft.nuke.dlm.model.IPermitRequest;
 import com.derbysoft.nuke.dlm.model.IPermitResponse;
 import com.derbysoft.nuke.dlm.server.codec.PermitRequest2ProtoBufEncoder;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,7 +18,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +30,11 @@ import java.util.concurrent.TimeUnit;
 class AbstractTcpPermitClient {
 
     private Logger log = LoggerFactory.getLogger(AbstractTcpPermitClient.class);
-    private static final AttributeKey<SetEnableResponseFuture> KEY = AttributeKey.<SetEnableResponseFuture>valueOf("responseFuture");
 
     protected EventLoopGroup group = new NioEventLoopGroup();
-    protected ChannelFuture channelFuture;
+    protected Channel channel;
+
+    private static final Cache<String, ResponseFuture> FUTURES = CacheBuilder.from("expireAfterWrite=1h").build();
 
     public AbstractTcpPermitClient(String host, int port) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
@@ -60,18 +62,22 @@ class AbstractTcpPermitClient {
                                     @Override
                                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                         IPermitResponse response = (IPermitResponse) msg;
-                                        ctx.channel().attr(KEY).get().set(response);
+                                        ResponseFuture future = FUTURES.getIfPresent(response.getHeader().getTransactionId());
+                                        if (future != null) {
+                                            future.set(response);
+                                            future.done();
+                                        }
                                     }
                                 });
                     }
 
                 });
 
-        channelFuture = bootstrap.connect(host, port).sync();
+        channel = bootstrap.connect(host, port).sync().channel();
     }
 
-    protected AbstractTcpPermitClient(ChannelFuture channelFuture, EventLoopGroup group) {
-        this.channelFuture = channelFuture;
+    protected AbstractTcpPermitClient(Channel channel, EventLoopGroup group) {
+        this.channel = channel;
         this.group = group;
     }
 
@@ -79,18 +85,18 @@ class AbstractTcpPermitClient {
         group.shutdownGracefully();
     }
 
-    protected <RS extends IPermitResponse> IResponseFuture<RS> submit(IPermitRequest<RS> request) {
-        final SetEnableResponseFuture<RS> responseFuture = new ResponseFuture<RS>();
-        Channel channel = channelFuture.channel();
-        channel.attr(KEY).set(responseFuture);
+    protected <RS extends IPermitResponse> IResponseFuture<RS> send(IPermitRequest<RS> request) {
+        final ResponseFuture<RS> responseFuture = new ResponseFuture<RS>();
+        FUTURES.put(request.getHeader().getTransactionId(), responseFuture);
         channel.writeAndFlush(request);
         return responseFuture;
     }
 
     protected <RS extends IPermitResponse> RS execute(IPermitRequest<RS> request) {
-        IResponseFuture<RS> future = submit(request);
+        IResponseFuture<RS> future = send(request);
         try {
             RS rs = future.get();
+            assert request.getHeader().getTransactionId().equals(rs.getHeader().getTransactionId());
             if (rs.getErrorMessage() != null && rs.getErrorMessage().length() > 0) {
                 throw new PermitException(rs.getErrorMessage());
             }
@@ -109,7 +115,11 @@ class AbstractTcpPermitClient {
         @Override
         public void set(RS rs) {
             this.response = rs;
+        }
+
+        public ResponseFuture<RS> done() {
             latch.countDown();
+            return this;
         }
 
         @Override

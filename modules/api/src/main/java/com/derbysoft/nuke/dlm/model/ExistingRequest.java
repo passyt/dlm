@@ -10,7 +10,11 @@ public class ExistingRequest extends BaseRequest<ExistingResponse> {
     }
 
     public ExistingRequest(String resourceId) {
-        super(resourceId);
+        this(resourceId, newHeader());
+    }
+
+    public ExistingRequest(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
     @Override

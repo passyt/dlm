@@ -13,15 +13,20 @@ public class UnRegisterResponse extends BaseResponse {
     public UnRegisterResponse() {
     }
 
-    public UnRegisterResponse(String permitId, boolean successful) {
-        super(permitId);
+    public UnRegisterResponse(String resourceId, boolean successful, Header header) {
+        super(resourceId, header);
         this.successful = successful;
     }
 
-    public UnRegisterResponse(String permitId, String errorMessage, boolean successful) {
-        super(permitId, errorMessage);
+    public UnRegisterResponse(String resourceId, String errorMessage, Header header) {
+        super(resourceId, errorMessage, header);
+    }
+
+    public UnRegisterResponse(String resourceId, String errorMessage, boolean successful, Header header) {
+        super(resourceId, errorMessage, header);
         this.successful = successful;
     }
+
 
     public boolean isSuccessful() {
         return successful;
@@ -48,6 +53,7 @@ public class UnRegisterResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("header", header)
                 .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .add("successful", successful)

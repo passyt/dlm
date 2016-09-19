@@ -13,17 +13,17 @@ public class TryAcquireResponse extends BaseResponse {
     public TryAcquireResponse() {
     }
 
-    public TryAcquireResponse(String resourceId, boolean successful) {
-        super(resourceId);
+    public TryAcquireResponse(String resourceId, boolean successful, Header header) {
+        super(resourceId, header);
         this.successful = successful;
     }
 
-    public TryAcquireResponse(String resourceId, String errorMessage) {
-        super(resourceId, errorMessage);
+    public TryAcquireResponse(String resourceId, String errorMessage, Header header) {
+        super(resourceId, errorMessage, header);
     }
 
-    public TryAcquireResponse(String resourceId, String errorMessage, boolean successful) {
-        super(resourceId, errorMessage);
+    public TryAcquireResponse(String resourceId, String errorMessage, boolean successful, Header header) {
+        super(resourceId, errorMessage, header);
         this.successful = successful;
     }
 
@@ -52,6 +52,7 @@ public class TryAcquireResponse extends BaseResponse {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("header", header)
                 .add("resourceId", resourceId)
                 .add("errorMessage", errorMessage)
                 .add("successful", successful)

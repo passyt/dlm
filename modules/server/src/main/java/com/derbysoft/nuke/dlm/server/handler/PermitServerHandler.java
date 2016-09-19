@@ -1,5 +1,6 @@
 package com.derbysoft.nuke.dlm.server.handler;
 
+import com.alibaba.fastjson.JSON;
 import com.derbysoft.nuke.dlm.IPermitService;
 import com.derbysoft.nuke.dlm.model.IPermitRequest;
 import com.derbysoft.nuke.dlm.model.IPermitResponse;
@@ -32,19 +33,21 @@ public class PermitServerHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        Logger streamLog = LoggerFactory.getLogger("http.StreamLog");
         IPermitRequest request = (IPermitRequest) msg;
         executor.execute(() -> {
-            log.info("Receive request <<| {} from {}", request, ctx.channel().remoteAddress().toString());
+            streamLog.info("Receive request <<| {} [{}] from {}", request, request.getClass().getSimpleName(), ctx.channel().remoteAddress().toString());
             IPermitResponse response = null;
             try {
                 response = permitService.execute(request);
             } catch (Exception e) {
-                log.error("Catch exception", e);
+                log.error("Catch exception by request [" + request + "]", e);
                 response = request.newResponse();
                 response.setResourceId(request.getResourceId());
+                response.setHeader(request.getHeader());
                 response.setErrorMessage(e.getMessage());
             }
-            log.info("Return response >>| {} to {}", response, ctx.channel().remoteAddress().toString());
+            streamLog.info("Return response >>| {} [{}] to {}", response, response.getClass().getSimpleName(), ctx.channel().remoteAddress().toString());
             ctx.writeAndFlush(response);
         });
     }

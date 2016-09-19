@@ -9,6 +9,10 @@ public interface IPermitResponse {
 
     void setErrorMessage(String errorMessage);
 
+    IPermitResponse setHeader(Header header);
+
     String getErrorMessage();
+
+    Header getHeader();
 
 }

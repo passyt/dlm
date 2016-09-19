@@ -3,6 +3,7 @@ package com.derbysoft.nuke.dlm.client.integration.tcp
 import com.derbysoft.nuke.dlm.IPermit
 import com.derbysoft.nuke.dlm.PermitSpec
 import com.derbysoft.nuke.dlm.client.tcp.TcpPermitManager
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -24,13 +25,15 @@ class TcpPermitTest {
         manager = new TcpPermitManager("127.0.0.1", 8081);
     }
 
+
+    @After
     def void shutdown() {
         manager.shutdown();
     }
 
     @Test
     def void register() {
-        println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
+        println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100000"))
         println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
         println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
     }
@@ -68,7 +71,7 @@ class TcpPermitTest {
     @Test
     def void performance() {
         def tasks = [];
-        def total = 2;
+        def total = 10000;
         AtomicInteger a = new AtomicInteger(total);
         (1..total).each {
             tasks.add({
@@ -76,6 +79,8 @@ class TcpPermitTest {
                 try {
                     println("acquiring...")
                     permit.acquire();
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 } finally {
                     permit.release();
                     println("acquired, left " + a.decrementAndGet());
@@ -83,11 +88,11 @@ class TcpPermitTest {
             });
         }
 
-        def pool = Executors.newFixedThreadPool(100);
+        def pool = Executors.newFixedThreadPool(50);
         def start = System.currentTimeMillis();
         pool.invokeAll(tasks);
         def end = System.currentTimeMillis();
-        println((end - start) + " ms: " + (end - start) * 1000d / total + " tps");
+        println((end - start) + " ms: " + total * 1000f / (end - start) + " tps");
         pool.shutdown();
     }
 

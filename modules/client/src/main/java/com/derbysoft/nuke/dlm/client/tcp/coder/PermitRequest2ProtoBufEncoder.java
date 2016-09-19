@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.*;
-import static com.derbysoft.nuke.dlm.model.Protobuf.Request.RequestType.TRY_ACQUIRE_REQUEST;
 
 /**
  * Created by passyt on 16-9-4.
@@ -23,6 +22,7 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(REGISTER_REQUEST)
                     .setRegisterRequest(
                             Protobuf.RegisterRequest.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
                                     .setResourceId(actualRequest.getResourceId())
                                     .setPermitName(ProtoBufUtils.safeValueOf(actualRequest.getPermitResourceName()))
                                     .setPermitSpec(actualRequest.getPermitSpec().getSpecification())
@@ -33,6 +33,7 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(UNREGISTER_REQUEST)
                     .setUnRegisterRequest(
                             Protobuf.UnRegisterRequest.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
                                     .setResourceId(((UnRegisterRequest) request).getResourceId())
                     )
                     .build());
@@ -41,6 +42,7 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(EXISTING_REQUEST)
                     .setExistingRequest(
                             Protobuf.ExistingRequest.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
                                     .setResourceId(((ExistingRequest) request).getResourceId())
                     )
                     .build());
@@ -49,6 +51,7 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(ACQUIRE_REQUEST)
                     .setAcquireRequest(
                             Protobuf.AcquireRequest.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
                                     .setResourceId(((AcquireRequest) request).getResourceId())
                     )
                     .build());
@@ -58,6 +61,7 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(TRY_ACQUIRE_REQUEST)
                     .setTryAcquireRequest(
                             Protobuf.TryAcquireRequest.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
                                     .setResourceId(tryAcquireRequest.getResourceId())
                                     .setTimeout(ProtoBufUtils.safeValueOf(tryAcquireRequest.getTimeout()))
                                     .setTimeUnit(
@@ -73,6 +77,7 @@ public class PermitRequest2ProtoBufEncoder extends MessageToMessageEncoder<IPerm
                     .setType(RELEASE_REQUEST)
                     .setReleaseRequest(
                             Protobuf.ReleaseRequest.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(request.getHeader().getTransactionId()).build())
                                     .setResourceId(releaseRequest.getResourceId())
                     )
                     .build());

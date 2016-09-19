@@ -23,6 +23,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(REGISTER_RESPONSE)
                     .setRegisterResponse(
                             Protobuf.RegisterResponse.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(response.getHeader().getTransactionId()).build())
                                     .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setSuccessful(actualResponse.isSuccessful())
@@ -35,6 +36,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(UNREGISTER_RESPONSE)
                     .setUnRegisterResponse(
                             Protobuf.UnRegisterResponse.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(response.getHeader().getTransactionId()).build())
                                     .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setSuccessful(actualResponse.isSuccessful())
@@ -47,6 +49,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(EXISTING_RESPONSE)
                     .setExistingResponse(
                             Protobuf.ExistingResponse.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(response.getHeader().getTransactionId()).build())
                                     .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setExisting(actualResponse.isExisting())
@@ -59,6 +62,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(ACQUIRE_RESPONSE)
                     .setAcquireResponse(
                             Protobuf.AcquireResponse.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(response.getHeader().getTransactionId()).build())
                                     .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
 
@@ -71,6 +75,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(TRY_ACQUIRE_RESPONSE)
                     .setTryAcquireResponse(
                             Protobuf.TryAcquireResponse.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(response.getHeader().getTransactionId()).build())
                                     .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                                     .setSuccessful(actualResponse.isSuccessful())
@@ -83,6 +88,7 @@ public class PermitResponse2ProtoBufEncoder extends MessageToMessageEncoder<IPer
                     .setType(RELEASE_RESPONSE)
                     .setReleaseResponse(
                             Protobuf.ReleaseResponse.newBuilder()
+                                    .setHeader(Protobuf.Header.newBuilder().setTransactionId(response.getHeader().getTransactionId()).build())
                                     .setResourceId(ProtoBufUtils.safeValueOf(actualResponse.getResourceId()))
                                     .setErrorMessage(ProtoBufUtils.safeValueOf(actualResponse.getErrorMessage()))
                     )

@@ -13,7 +13,11 @@ public class AcquireRequest extends BaseRequest<AcquireResponse> {
     }
 
     public AcquireRequest(String resourceId) {
-        super(resourceId);
+        this(resourceId, newHeader());
+    }
+
+    public AcquireRequest(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
     @Override

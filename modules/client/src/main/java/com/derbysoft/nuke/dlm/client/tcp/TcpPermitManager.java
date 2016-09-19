@@ -32,6 +32,6 @@ public class TcpPermitManager extends AbstractTcpPermitClient implements IPermit
 
     @Override
     public IPermit getPermit(String resourceId) {
-        return new TcpPermit(resourceId, channelFuture, group);
+        return new TcpPermit(resourceId, channel, group);
     }
 }

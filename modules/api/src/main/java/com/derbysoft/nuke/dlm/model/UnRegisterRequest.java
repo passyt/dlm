@@ -10,7 +10,11 @@ public class UnRegisterRequest extends BaseRequest<UnRegisterResponse> {
     }
 
     public UnRegisterRequest(String resourceId) {
-        super(resourceId);
+        this(resourceId, newHeader());
+    }
+
+    public UnRegisterRequest(String resourceId, Header header) {
+        super(resourceId, header);
     }
 
     @Override
