@@ -1,10 +1,10 @@
 package com.derbysoft.nuke.dlm.client.tcp;
 
+import com.derbysoft.nuke.dlm.client.tcp.coder.PermitRequest2ProtoBufEncoder;
 import com.derbysoft.nuke.dlm.client.tcp.coder.ProtoBuf2PermitResponseDecoder;
 import com.derbysoft.nuke.dlm.exception.PermitException;
 import com.derbysoft.nuke.dlm.model.IPermitRequest;
 import com.derbysoft.nuke.dlm.model.IPermitResponse;
-import com.derbysoft.nuke.dlm.server.codec.PermitRequest2ProtoBufEncoder;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.netty.bootstrap.Bootstrap;

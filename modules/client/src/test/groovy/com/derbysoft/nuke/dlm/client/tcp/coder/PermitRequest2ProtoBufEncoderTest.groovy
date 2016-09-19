@@ -1,7 +1,6 @@
 package com.derbysoft.nuke.dlm.client.tcp.coder
 
 import com.derbysoft.nuke.dlm.model.*
-import com.derbysoft.nuke.dlm.server.codec.PermitRequest2ProtoBufEncoder
 import io.netty.channel.ChannelHandlerContext
 import spock.lang.Shared
 import spock.lang.Specification
