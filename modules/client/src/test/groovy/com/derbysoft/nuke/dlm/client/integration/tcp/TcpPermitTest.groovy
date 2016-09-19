@@ -25,15 +25,14 @@ class TcpPermitTest {
         manager = new TcpPermitManager("127.0.0.1", 8081);
     }
 
-
-    @After
+//    @After
     def void shutdown() {
         manager.shutdown();
     }
 
     @Test
     def void register() {
-        println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100000"))
+        println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
         println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
         println manager.register(resourceId, "LeakyBucketPermit", new PermitSpec("permitsPerSecond=100"))
     }
@@ -71,7 +70,7 @@ class TcpPermitTest {
     @Test
     def void performance() {
         def tasks = [];
-        def total = 10000;
+        def total = 2;
         AtomicInteger a = new AtomicInteger(total);
         (1..total).each {
             tasks.add({
@@ -94,6 +93,8 @@ class TcpPermitTest {
         def end = System.currentTimeMillis();
         println((end - start) + " ms: " + total * 1000f / (end - start) + " tps");
         pool.shutdown();
+
+        TimeUnit.SECONDS.sleep(3000L)
     }
 
 }

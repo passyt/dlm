@@ -3,6 +3,8 @@ package com.derbysoft.nuke.dlm.client.tcp.coder;
 import com.derbysoft.nuke.dlm.model.*;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -10,6 +12,8 @@ import java.util.List;
  * Created by passyt on 16-9-4.
  */
 public class ProtoBuf2PermitResponseDecoder extends MessageToMessageDecoder<Protobuf.Response> {
+
+    private static final Logger log = LoggerFactory.getLogger(ProtoBuf2PermitResponseDecoder.class);
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Protobuf.Response response, List<Object> out) throws Exception {
@@ -31,6 +35,9 @@ public class ProtoBuf2PermitResponseDecoder extends MessageToMessageDecoder<Prot
                 break;
             case RELEASE_RESPONSE:
                 out.add(new ReleaseResponse(response.getReleaseResponse().getResourceId(), response.getReleaseResponse().getErrorMessage(), new Header(response.getReleaseResponse().getHeader().getTransactionId())));
+                break;
+            case PING_RESPONSE:
+                log.info("Receive ping message from server: {}", response.getPingResponse().getEcho());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown message type by " + response.getType());

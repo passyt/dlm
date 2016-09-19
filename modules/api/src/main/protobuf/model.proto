@@ -75,7 +75,7 @@ message TryAcquireResponse {
     bool successful = 4;
 }
 
-message ReleaseRequest{
+message ReleaseRequest {
     Header header = 1;
     string resourceId = 2;
 }
@@ -86,6 +86,14 @@ message ReleaseResponse {
     string errorMessage = 3;
 }
 
+message PingRequest {
+    string echo = 1;
+}
+
+message PingResponse {
+    string echo = 1;
+}
+
 message Request {
     enum RequestType {
         REGISTER_REQUEST = 0;
@@ -94,6 +102,7 @@ message Request {
         ACQUIRE_REQUEST = 3;
         TRY_ACQUIRE_REQUEST = 4;
         RELEASE_REQUEST = 5;
+        PING_REQUEST = 6;
     }
 
     Header header = 1;
@@ -104,6 +113,7 @@ message Request {
     AcquireRequest acquireRequest = 6;
     TryAcquireRequest tryAcquireRequest = 7;
     ReleaseRequest releaseRequest = 8;
+    PingRequest pingRequest = 9;
 }
 
 message Response {
@@ -114,6 +124,7 @@ message Response {
         ACQUIRE_RESPONSE = 3;
         TRY_ACQUIRE_RESPONSE = 4;
         RELEASE_RESPONSE = 5;
+        PING_RESPONSE = 6;
     }
 
     Header header = 1;
@@ -124,8 +135,9 @@ message Response {
     AcquireResponse acquireResponse = 6;
     TryAcquireResponse tryAcquireResponse = 7;
     ReleaseResponse releaseResponse = 8;
+    PingResponse pingResponse = 9;
 }
 
-message Header{
+message Header {
     string transactionId = 1;
 }

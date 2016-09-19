@@ -33,17 +33,19 @@ class AbstractTcpPermitClient {
 
     protected EventLoopGroup group = new NioEventLoopGroup();
     protected Channel channel;
+    protected Bootstrap bootstrap;
 
     private static final Cache<String, ResponseFuture> FUTURES = CacheBuilder.from("expireAfterWrite=1h").build();
 
     public AbstractTcpPermitClient(String host, int port) throws InterruptedException {
-        Bootstrap bootstrap = new Bootstrap();
+        bootstrap = new Bootstrap();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32 * 1024)
                 .option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8 * 1024)
+//                .option(ChannelOption.SO_TIMEOUT, 5000)
                 .handler(new ChannelInitializer<SocketChannel>() {
 
                     @Override
@@ -60,6 +62,12 @@ class AbstractTcpPermitClient {
                                 .addLast("handler", new ChannelHandlerAdapter() {
 
                                     @Override
+                                    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+                                        log.warn("Connection is down and reconnecting...");
+                                        AbstractTcpPermitClient.this.doConnect(host, port);
+                                    }
+
+                                    @Override
                                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                         IPermitResponse response = (IPermitResponse) msg;
                                         ResponseFuture future = FUTURES.getIfPresent(response.getHeader().getTransactionId());
@@ -68,17 +76,39 @@ class AbstractTcpPermitClient {
                                             future.done();
                                         }
                                     }
+
                                 });
                     }
 
                 });
-
-        channel = bootstrap.connect(host, port).sync().channel();
+        doConnect(host, port);
     }
 
     protected AbstractTcpPermitClient(Channel channel, EventLoopGroup group) {
         this.channel = channel;
         this.group = group;
+    }
+
+    private void doConnect(String host, int port) throws InterruptedException {
+        log.info("Connecting to {}:{}", host, port);
+        channel = bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    log.info("Connection is ok");
+                } else {
+                    future.channel().eventLoop().schedule(() -> {
+                        try {
+                            doConnect(host, port);
+                        } catch (InterruptedException e) {
+                            log.error("Error", e);
+                        }
+                    }, 3, TimeUnit.SECONDS);
+                }
+            }
+
+        }).channel();
     }
 
     public void shutdown() {
