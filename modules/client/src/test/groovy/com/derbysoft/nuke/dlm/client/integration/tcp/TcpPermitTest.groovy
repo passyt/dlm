@@ -22,7 +22,7 @@ class TcpPermitTest {
 
     @Before
     def void startup() {
-        manager = new TcpPermitManager("10.200.152.69", 8081);
+        manager = new TcpPermitManager("127.0.0.1", 8081);
     }
 
 //    @After
@@ -87,7 +87,7 @@ class TcpPermitTest {
             });
         }
 
-        def pool = Executors.newFixedThreadPool(50);
+        def pool = Executors.newFixedThreadPool(100);
         def start = System.currentTimeMillis();
         pool.invokeAll(tasks);
         def end = System.currentTimeMillis();

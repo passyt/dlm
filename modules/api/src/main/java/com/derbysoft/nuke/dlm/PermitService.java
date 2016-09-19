@@ -3,6 +3,8 @@ package com.derbysoft.nuke.dlm;
 import com.derbysoft.nuke.dlm.model.IPermitRequest;
 import com.derbysoft.nuke.dlm.model.IPermitResponse;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by passyt on 16-9-4.
  */
@@ -16,6 +18,11 @@ public class PermitService<RS extends IPermitResponse, RQ extends IPermitRequest
 
     @Override
     public RS execute(RQ request) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(500L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return request.executeBy(permitManager);
     }
 

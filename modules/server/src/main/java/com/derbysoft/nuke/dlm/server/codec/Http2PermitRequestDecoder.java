@@ -79,6 +79,9 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
         if ("/help".equals(uri)) {
             help(ctx);
             return;
+        } else if ("/status".equals(uri)) {
+            status(ctx);
+            return;
         }
 
         Map<String, String> parameters = toParameters(uri.substring(1));
@@ -121,8 +124,23 @@ public class Http2PermitRequestDecoder extends MessageToMessageDecoder<FullHttpR
         content.append(HELP_MESSAGE);
         content.append("Status:\n");
         content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
-        for (Map.Entry<String, IPermit> entry : manager.permits().entrySet()) {
-            content.append("<tr>").append("<td>").append(entry.getKey()).append("</td>").append("<td>").append(entry.getValue()).append("</td>").append("</tr>");
+        for (Map.Entry<String, PermitManager.StatPermit> entry : manager.permits().entrySet()) {
+            content.append("<tr>").append("<td>").append(entry.getKey()).append("</td>").append("<td>").append(entry.getValue().getPermit()).append("</td>").append("</tr>");
+        }
+        content.append("</table>\n");
+
+        DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(content.toString().getBytes("UTF-8")));
+        httpResponse.headers().add("Content-Type", "text/html; charset=utf-8");
+        httpResponse.headers().add("Server", "Netty-5.0");
+        ctx.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    protected void status(ChannelHandlerContext ctx) throws UnsupportedEncodingException {
+        StringBuilder content = new StringBuilder();
+        content.append("Status:\n");
+        content.append("<table border=\"1\" bordercolor=\"#ccc\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;\">\n");
+        for (Map.Entry<String, PermitManager.StatPermit> entry : manager.permits().entrySet()) {
+            content.append("<tr>").append("<td>").append(entry.getKey()).append("</td>").append("<td>").append(entry.getValue().getPermit()).append("</td>").append("<td>").append(entry.getValue().getStats()).append("</td>").append("</tr>");
         }
         content.append("</table>\n");
 

@@ -78,8 +78,8 @@ public abstract class BaseRequest<RS extends BaseResponse> implements IPermitReq
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("resourceId", resourceId)
                 .add("header", header)
+                .add("resourceId", resourceId)
                 .toString();
     }
 
